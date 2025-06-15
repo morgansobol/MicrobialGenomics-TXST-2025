@@ -5,5 +5,5 @@ This repo contains course materials, tutorials, and example scripts for [Texas S
 ## Contents
 - 📋 [Syllabus](syllabus.md)
 - 💻 [HPC Access & Environment Setup](hpc_guide.md)
-- 📓 [Exercises](tutorials/)
+- 📓 [Exercises](exercises/)
 - 📜 [Lecture Slides](lectures/)
