@@ -19,6 +19,6 @@ By the end of this exercise, you should be able to:
 
 ## 🧪 Exercise 1: Navigating the Filesystem
 
-### 🔹 Let's check where you are by **p**rinting your **w**orking **d**irecty (i.e. where you currently are in the system)
+### 🔹 Let's check where you are by Printing your Working Directory (i.e. where you currently are in the system)
 ```bash
 pwd
