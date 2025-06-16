@@ -29,7 +29,7 @@ pwd
 ls
 ```
 
-### 🔹 Sometimes there are *hidden* files, typically configuration files, which begin with dot. E.g., your bash profile is configured by the file ~/.bash_profile. To see these files use ls -a, to see <ins>a</ins>ll files, including hidden ones.
+### 🔹 Sometimes there are *hidden* files, typically configuration files, which begin with dot. E.g., your bash profile is configured by the file ~/.bash_profile. To see these files use the ls *command* with the *argument* -a, to see <ins>a</ins>ll files, including hidden ones.
 ```bash
 ls -a
 ```
@@ -93,7 +93,7 @@ echo "Sample 3" > sample3.txt
 ls
 ```
 
-### 🔹 Lets <ins>c</ins>o<ins>P</ins>y the second file and rename it. The first file called is the file you want to copy, the second is what you want to name the copy.
+### 🔹 Lets <ins>c</ins>o<ins>p</ins>y the second file and rename it. The first file called is the file you want to copy, the second is what you want to name the copy.
 ```bash
 cp sample2.txt copy_sample2.txt
 ls
@@ -131,7 +131,7 @@ rm -r copies/
 ls
 ```
 
-## 🧪 Exercise 3: Editing file contents
+## 🧪 Exercise 3: Editing/creating file contents
 ### 🔹 It is often very useful to be able to generate new plain-text files quickly at the command line, or make some changes to an existing one. One way to do this is using a text editor that operates at the command line. Here we’re going to look at one program that does this called "nano". Let's test it with a file that already exists.
 ```bash
 nano sample1.txt
@@ -147,6 +147,23 @@ sampleB
 ```bash
 head sample1.txt
 ```
+### 🔹 I also use nano to create files, you just simply type nano, followed by the file name you want and its extension. E.g.:
+```bash
+nano mynewfile.txt
+```
+>[!NOTE]
+> The second part of a file name is called the filename extension, and indicates what type of data the file holds. Here are some common examples:
+>* .txt is a plain text file.
+>* .csv is a text file with tabular data where each column is separated by a comma.
+>* .tsv is like a CSV but values are separated by a tab.
+>* .log is a text file containing messages produced by a software while it runs.
+>* .pdf indicates a PDF document.
+>* .png is a PNG image.
+>* .sh indicates a shell script file.
+>  
+>This is just a convention, albeit an important one. Files contain bytes: it’s up to us and our programs to interpret those bytes according to the rules for plain text files, PDF documents, configuration files, images, and so on.
+>Naming a PNG image of a whale as whale.mp3 doesn’t somehow magically turn it into a recording of whalesong, though it might cause the operating system to try to open it with a music player when someone double-clicks it.
+
 
 ## 🧪 Exercise 4: Using wildcards
 
