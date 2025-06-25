@@ -42,33 +42,111 @@ conda activate seqQC
 ```
 Now to run the program we do the following, calling the sequence reads from the rawseq folder like so:
 ```bash
-fastqc ../../rawseqs/good_reads_R1.fq ../../fawseqs/good_reads_R2.fq
+fastqc ../../rawseqs/B1_sub_R1.fq ../../rawseqs/B1_sub_R2.fq
 ```
-Now also run FastQC it on the bad_reads in the same rawseq directory. 
 We should get an .html file to view the outputs.
 
-[insert pics of good output]
+[insert pics of output]
 
-[insert pics of bad output]
+You can see the errors. Let's still trim both reads and see how they further improve. 
 
-You can see the differences. Let's still trim both reads and see how they further improve. 
 
-## 🧪 Exercise 2: Trimming bad reads with Trimmomatic 
-Don't forget to go back one directory, into the working_dir, and create a new directory called trimmomatic.
+## 🧪 Exercise 2: Trimming primers with Cutadapt 
+Don't forget to go back one directory, into the working_dir, and create a new directory called cutadapt.
 ```bash
 cd ..
-mkdir trimmomatic
-cd trimmomatic/
+mkdir cutadapt
+cd cutadapt/
 ```
-Now we will run trimmomatic on paired-end mode, because remember from lecture, most cases reads are sequenced in the forward and reverse direction, meaning each forward read should have a paired read. 
+Now copy over the data files we are working with to our current directory:
 ```bash
-trimmomatic PE R1.fq R2.fq xxxxxx CROP:140 LEADING:10 TRAILING:10 SLIDINGWINDOW:5:20 MINLEN:140 -threads 4
+cp ../rawreads/*.fq .
 ```
-The syntax for how to run Trimmomatic can be found in their manual (provide link), but our filtering thresholds here start with “LEADING:10”. This says cut the bases off the start of the read if their quality score is below 10, and we have the same set for the end with “TRAILING:10”. Then the sliding window parameters are 5 followed by 20, which means starting at base 1, look at a window of 5 bps and if the average quality score drops before 20, truncate the read at that position and only keep up to that point. The stringent part comes in with the MINLEN:151 at the end. Since the reads are already only 151 bps long, this means if any part of the read is truncated due to those quality metrics set above the entire read will be thrown away.
 
-Ok, now let's check again with FastQC to see how that improved the output
+In our working directory there are 20 samples with forward (R1) and reverse (R2) reads with per-base-call quality information, so 40 fastq files (.fq). I typically like to have a file with all the sample names to use for various things throughout, so here’s making that file based on how these sample names are formatted. 
+```bash
+ls *_R1.fq | cut -f1 -d "_" > samples
+```
+
+Now we will run cutadapt on paired-end mode, because remember from lecture, most cases reads are sequenced in the forward and reverse direction, meaning each forward read should have a paired read. 
+```bash
+cutadapt -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
+         -A ^GGACTACHVGGGTWTCTAAT...TTACCGCGGCKGCTGGCAC \
+         -m 215 -M 285 --discard-untrimmed \
+         -o B1_sub_R1_trimmed.fq -p B1_sub_R2_trimmed.fq \
+         B1_sub_R1.fq B1_sub_R2.fq 
+```
+We are specifying the primers for the forward read with the -a flag, giving it the forward primer (in normal orientation), followed by three dots (required by cutadapt to know they are “linked”, with bases in between them, rather than right next to each other), then the reverse complement of the reverse primer. 
+
+Then for the reverse reads, specified with the -A flag, we give it the reverse primer (in normal 5’-3’ orientation), three dots, and then the reverse complement of the forward primer. Both of those have a ^ symbol in front at the 5’ end indicating they should be found at the start of the reads (which is the case with this particular setup). The minimum read length (set with -m) and max (set with -M) were based roughly on 10% smaller and bigger than would be expected after trimming the primers. --discard-untrimmed states to throw away reads that don’t have these primers in them in the expected locations. Then -o specifies the output of the forwards reads, -p specifies the output of the reverse reads, and the input forward and reverse are provided as positional arguments in that order.
+
+>[!NOTE]
+> These types of settings will be different for data generated with different sequencing, i.e. not 2x300, and different primers sets. 
+
+
+Ok, let's take a quick look to see that the primers were trimmed. 
+```bash
+### R1 BEFORE TRIMMING PRIMERS
+head -n 2 B1_sub_R1.fq
+# @M02542:42:000000000-ABVHU:1:1101:8823:2303 1:N:0:3
+# GTGCCAGCAGCCGCGGTAATACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTGCGCAGGCGGTCTTGT
+# AAGACAGAGGTGAAATCCCTGGGCTCAACCTAGGAATGGCCTTTGTGACTGCAAGGCTGGAGTGCGGCAGAGGGGGATGG
+# AATTCCGCGTGTAGCAGTGAAATGCGTAGATATGCGGAGGAACACCGATGGCGAAGGCAGTCCCCTGGGCCTGCACTGAC
+# GCTCATGCACGAAAGCGTGGGGAGCAAACAGGATTAGATACCCGGGTAGTCC
+
+### R1 AFTER TRIMMING PRIMERS
+head -n 2 B1_sub_R1_trimmed.fq
+# @M02542:42:000000000-ABVHU:1:1101:8823:2303 1:N:0:3
+# TACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTGCGCAGGCGGTCTTGTAAGACAGAGGTGAAATCCC
+# TGGGCTCAACCTAGGAATGGCCTTTGTGACTGCAAGGCTGGAGTGCGGCAGAGGGGGATGGAATTCCGCGTGTAGCAGTG
+# AAATGCGTAGATATGCGGAGGAACACCGATGGCGAAGGCAGTCCCCTGGGCCTGCACTGACGCTCATGCACGAAAGCGTG
+# GGGAGCAAACAGG
+
+
+### R2 BEFORE TRIMMING PRIMERS
+head -n 2 B1_sub_R2.fq
+# @M02542:42:000000000-ABVHU:1:1101:8823:2303 2:N:0:3
+# GGACTACCCGGGTATCTAATCCTGTTTGCTCCCCACGCTTTCGTGCATGAGCGTCAGTGCAGGCCCAGGGGACTGCCTTC
+# GCCATCGGTGTTCCTCCGCATATCTACGCATTTCACTGCTACACGCGGAATTCCATCCCCCTCTGCCGCACTCCAGCCTT
+# GCAGTCACAAAGGCCATTCCTAGGTTGAGCCCAGGGATTTCACCTCTGTCTTACAAGACCGCCTGCGCACGCTTTACGCC
+# CAGTAATTCCGATTAACGCTCGCACCCTACGTATTACCGCGGCTGCTGGCACTCACACTC
+
+
+### R2 AFTER TRIMMING PRIMERS
+head -n 2 B1_sub_R2_trimmed.fq
+# @M02542:42:000000000-ABVHU:1:1101:8823:2303 2:N:0:3
+# CCTGTTTGCTCCCCACGCTTTCGTGCATGAGCGTCAGTGCAGGCCCAGGGGACTGCCTTCGCCATCGGTGTTCCTCCGCA
+# TATCTACGCATTTCACTGCTACACGCGGAATTCCATCCCCCTCTGCCGCACTCCAGCCTTGCAGTCACAAAGGCCATTCC
+# TAGGTTGAGCCCAGGGATTTCACCTCTGTCTTACAAGACCGCCTGCGCACGCTTTACGCCCAGTAATTCCGATTAACGCT
+# CGCACCCTACGTA
+```
+
+Now, on to doing them all with a loop, here is how we can run it on all our samples at once. Since we have a lot of samples here, I’m redirecting the “stdout” (what’s printing the stats for each sample) to a file called *utadapt_primer_trimming_stats.txt* so we can more easily view and keep track of if we’re losing a ton of sequences or not by having that information stored somewhere – instead of just plastered to the terminal window. We’re also going to take advantage of another convenience of cutadapt – by adding the extension .gz to the output file names, it will compress them for us.
+
+```bash
+for sample in $(cat samples)
+do
+
+    echo "On sample: $sample"
+    
+    cutadapt -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
+             -A ^GGACTACHVGGGTWTCTAAT...TTACCGCGGCKGCTGGCAC \
+             -m 215 -M 285 --discard-untrimmed \
+             -o ${sample}_sub_R1_trimmed.fq.gz -p ${sample}_sub_R2_trimmed.fq.gz \
+             ${sample}_sub_R1.fq ${sample}_sub_R2.fq \
+             >> cutadapt_primer_trimming_stats.txt 2>&1
+
+done
+```
+
+You can look through the output of the cutadapt stats file we made (“cutadapt_primer_trimming_stats.txt”) to get an idea of how things went. Here’s a little one-liner to look at what fraction of reads were retained in each sample (column 2) and what fraction of bps were retained in each sample (column 3):
+```bash
+paste samples <(grep "passing" cutadapt_primer_trimming_stats.txt | cut -f3 -d "(" | tr -d ")") <(grep "filtered" cutadapt_primer_trimming_stats.txt | cut -f3 -d "(" | tr -d ")")
+```
+
+Let's also check again with FastQC to see how that improved the output
 ```bash
 cd ../fastqc/
-fastqc ../trimmomatic/R1.fq R2.fq
+fastqc ../cutadapt/R1.fq R2.fq
 ```
-
+With primers removed, we’re now ready to switch to R and start using DADA2!
