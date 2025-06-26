@@ -29,7 +29,7 @@ We will *not* go over Demultiplexing. Demultiplexing refers to the step in proce
 
 ---
 
-## 🧪 Exercise 1: FastQC, the most widely used tool for checking your read quality
+## 🧪 Exercise 1: FastQC, checking your read quality
 First we need to set up the directory we are going to work in. I personally prefer to have a directory for each software we use. So let's make one for fastQC.
 ```bash
 cd working_dir/
@@ -51,7 +51,7 @@ We should get an .html file to view the outputs.
 You can see the errors. Let's still trim both reads and see how they further improve. 
 
 
-## 🧪 Exercise 2: Trimming primers with Cutadapt 
+## 🧪 Exercise 2: Removing primers with Cutadapt 
 Don't forget to go back one directory, into the working_dir, and create a new directory called cutadapt.
 ```bash
 cd ..
@@ -83,8 +83,7 @@ Then for the reverse reads, specified with the -A flag, we give it the reverse p
 >[!NOTE]
 > These types of settings will be different for data generated with different sequencing, i.e. not 2x300, and different primers sets. 
 
-
-Ok, let's take a quick look to see that the primers were trimmed. 
+Ok, let's take a quick look to see that the primers were trimmed off. 
 ```bash
 ### R1 BEFORE TRIMMING PRIMERS
 head -n 2 B1_sub_R1.fq
