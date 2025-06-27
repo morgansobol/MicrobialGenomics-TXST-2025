@@ -52,7 +52,7 @@ summary(iris_df)
 Write a table/data matrix as a tab-delimited file
 ```R
 write.table(object, "filename.tsv", sep="\t")
-
+```
 ## 🧪 Step 1: Setting up the working environment
 ```R
 library(dada2)
