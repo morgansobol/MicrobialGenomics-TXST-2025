@@ -506,6 +506,8 @@ sigtab_deseq_altered_vs_glassy_with_tax[order(sigtab_deseq_altered_vs_glassy_wit
 ```
 If you glance through the taxonomy of our significant table here, you’ll see several have the same designations. It’s possible this is one of those cases where the single-nucleotide resolution approach more inhibits our cause than helps it. You can imagine that with organisms having multiple copies of the 16S rRNA gene, which may not be identical, this could be muddying what we’re looking for here by splitting the signal up and weaking it. Another way to look at this would be to sum the ASVs by the same genus designations, or to go back and cluster them into some form of OTU (after identifying ASVs) – in which case we’d still be using the ASV units, but then clustering them at some arbitrary level to see if that level of resolution is more revealing for the system we’re looking at.
 
+## Bonus: Environmental drivers of community diversity
+
 ## 📝 Assignment due next class on Canvas
 Perform a top-level exploration of one of the sample outputs and answer these three questions. 
 1. What are the dominant taxa in the sample you chose?
