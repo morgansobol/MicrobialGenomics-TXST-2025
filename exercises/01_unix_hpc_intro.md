@@ -15,8 +15,32 @@ By the end of this exercise, you should be able to:
 - Understand and run a basic bash script
 
 ---
+## 🧪 Exercise 1: Accessing LEAP2 - TXST's high-performance computer (HPC)
+Connecting to an HPC system is typically done with a program known as “SSH” (Secure SHell) which is accessed through a Terminal. Linux and Mac users will find a Terminal program already installed on their computers. Windows users will need to install a Terminal emulator. I suggest using MobaXterm. If you do not already have it installed, please install the free version now: https://mobaxterm.mobatek.net/download.html. 
 
-## 🧪 Exercise 1: Navigating the Filesystem
+The SSH program needs the web address of the server we want to access. You should have received an email from Shane Flaherty with your login information and the LEAP2 web address.
+Open your terminal to test connecting to LEAP2. 
+
+```bash
+ssh [insert net ID]@leap2.txstate.edu
+```
+If this is your first time connecting to LEAP2, you will probably see a similar message as the one below. 
+```bash
+The authenticity of host 'leap2.txstate.edu' can't be established.
+RSA key fingerprint is 2a:b6:f6:8d:9d:c2:f8:2b:8c:c5:03:06:a0:f8:59:12.
+Are you sure you want to continue connecting (yes/no)?
+```
+This is your computer warning you that you’re about to connect to another computer, type "yes" and press ENTER to proceed. This will add the HPC to your "known hosts", and you shouldn’t see the message again the future.
+
+You should now be prompted to input your password. Your first password can be found in the email from Shane. Type it in carefully because no characters will appear on the screen for you to see what you type. Then press ENTER.
+
+If you entered your password appropriately, congratulations, you’re now connected to the HPC!
+
+Now, if it is your first time accessing LEAP2, we will change your password as per Shane's request.
+Type `passwd' and press ENTER to start 
+
+
+## 🧪 Exercise 2: Navigating the Filesystem
 
 Let's check where you are by <ins>p</ins>rinting your <ins>w</ins>orking <ins>d</ins>irectory (i.e. where you currently are in the system).
 ```bash
@@ -76,7 +100,7 @@ cd
 pwd
 ```
 
-## 🧪 Exercise 2: Creating, copying, moving, and removing files + directories
+## 🧪 Exercise 3: Creating, copying, moving, and removing files + directories
 > [!WARNING]
 > Using commands that do things like create, copy, and move files at the command line will <ins>**overwrite**</ins> files if they have the same name. And using commands that delete things will do so <ins>**permanently**</ins>. Use caution using these commands.
 
@@ -135,7 +159,7 @@ rm -r copies/
 ls
 ```
 
-## 🧪 Exercise 3: Editing/creating file contents
+## 🧪 Exercise 4: Editing/creating file contents
 
 It is often very useful to be able to generate new plain-text files quickly at the command line, or make some changes to an existing one. One way to do this is using a text editor that operates at the command line. Here we’re going to look at one program that does this called `nano`. Let's test it with a file that already exists.
 ```bash
@@ -184,7 +208,7 @@ nano mynewfile.txt
 >Naming a PNG image of a whale as whale.mp3 doesn’t somehow magically turn it into a recording of whalesong, though it might cause the operating system to try to open it with a music player when someone double-clicks it.
 
 
-## 🧪 Exercise 4: Redirectors and Wildcards
+## 🧪 Exercise 5: Redirectors and Wildcards
 
 Go back to XX directory. 
 
