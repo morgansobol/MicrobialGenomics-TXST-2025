@@ -77,7 +77,7 @@ Now <ins>l</ins>i<ins>s</ins>t the contents of your current directory using the 
 ```bash
 ls
 ```
-You should see 'github directory', we'll explore this in a minute. 
+You should see the directory we just downloaded from Github called "MicrobialGenomics-TXST-2025", we'll explore this in a minute. 
 
 Often, there are also *hidden* files, typically configuration files, which begin with a dot (`.`). E.g., your bash profile is configured by the file ~/.bash_profile. Configuration files do things like store settings and preferences for programs, determine what programs are "turned on" when you log in, and customize how your shell behaves. 
 
@@ -85,7 +85,7 @@ To see these *hidden* files use the **'ls'** *command* with the *argument* -a, t
 ```bash
 ls -a
 ```
-You should see file names like these `.bash_history  .bash_logout  .bash_profile  .bashrc  .emacs  .kshrc  .mozilla  .ssh`. 
+You should see file names like these `.  ..  .bash_history  .bash_logout  .bash_profile  .bashrc  .emacs  example.txt  .kshrc  MicrobialGenomics-TXST-2025  .mozilla  .ssh`. 
 
 We can also use `ls` to see the sizes of the files, in bytes, in our directories with the argument -l.
 ```bash
@@ -97,47 +97,69 @@ I prefer to add -lh, the "h" prints the sizes in a <ins>h</ins>uman-readable for
 ls -lh
 ```
 
-Ok, lets move into our Github downloaded directorie, or <ins>c</ins>hange <ins>d</ins>irectories using the `cd` command. Move to the the directory and use `pwd` and `ls` to see where you are and what is there.
+Ok, lets move into our Github downloaded directory, or <ins>c</ins>hange <ins>d</ins>irectories using the `cd` command. Move to the MicrobialGenomics-TXST-2025 directory and use `pwd` and `ls` to see where you are and what is there. **Type each line one at a time and press enter**
+
 ```bash
-cd xx/
+cd MicrobialGenomics-TXST-2025/
 pwd
 ls
 ```
+What do you see? 
 
-To move back one directory, simply use `..`:
+To move back one directory to _home_, simply use `..` like so:
 ```bash
 cd ..
+pwd
+ls
 ```
+The pwd command should again give you `/home/[netID]` and ls should give you `.  ..  .bash_history  .bash_logout  .bash_profile  .bashrc  .emacs  example.txt  .kshrc  MicrobialGenomics-TXST-2025  .mozilla  .ssh`. 
 
 You can also use `cd` to "jump" to other directories quickly, like below:
-> [!TIP]
-> If we are trying to specify a file or path we can begin typing its name and then press the <ins>tab</ins> key to complete it (try it out below). If there is only one possible way to finish what we’ve started typing, it will complete it entirely for us. If there is more than one possible way to finish what we’ve started typing, it will complete as far as it can, and then hitting tab twice quickly will show all the possible options. If tab-complete does not do either of those things, then we are either confused about where we are or what is where, or we've maybe spelled the name wrong.
-
 ```bash
-cd xx/xxx/xxxx/
+cd MicrobialGenomics-TXST-2025/data/01_intro/
+pwd
+```
+
+If you type `cd` alone, as is, it will bring you all the way back to home, everytime. 
+```bash
+cd
+pwd
+```
+
+Ok, now let's go back to where we before and try something else.
+```bash
+cd MicrobialGenomics-TXST-2025/data/01_intro/
 pwd
 ```
 
 When combined with "..", you can move back multiple directories as well.
 ```bash
-cd ../xx/xxx/xxxx/
+cd ../../
+pwd
+```
+Where are you now? (Hint: should be `/home/[netID]/MicrobialGenomics-TXST-2025`)
+
+> [!TIP]
+> If we are trying to specify a file or path we can begin typing its name and then press the <ins>tab</ins> key to complete it (try it out below). If there is only one possible way to finish what we’ve started typing, it will complete it entirely for us. If there is more than one possible way to finish what we’ve started typing, it will complete as far as it can, and then hitting tab twice quickly will show all the possible options. If tab-complete does not do either of those things, then we are either confused about where we are or what is where, or we've maybe spelled the name wrong.
+
+Let's try this out. Go back to your home with `cd`. Now, let's go back to the `01_intro/` directory, but this time we will use tab to fill out our path, not type it out. Watch first.
+```bash
+cd MicrobialGenomics-TXST-2025/data/01_intro/
 pwd
 ```
 
-Lastly, to return all the way back to your root directory, simple just use `cd`.
-```bash
-cd 
-pwd
-```
+Ok, that was a brief intro to moving around the command line. Practice makes perfect, so practice this when you can, and it will eventually become natural. 
 
 ## 🧪 Exercise 3: Creating, copying, moving, and removing files + directories
 > [!WARNING]
 > Using commands that do things like create, copy, and move files at the command line will <ins>**overwrite**</ins> files if they have the same name. And using commands that delete things will do so <ins>**permanently**</ins>. Use caution using these commands.
 
+So we should still be in the `01_intro/` directory. Let's make a new directory in this one. 
 Start with <ins>m</ins>a<ins>k</ins>ing a new <ins>dir</ins>ectory, using the `mkdir` command, then move into it.
 ```bash
-mkdir practice_files
-cd practice_files
+mkdir practice
+ls
+cd practice
 ```
 
 Now create files in this directory and use `ls` to check that the files are there.
@@ -262,4 +284,16 @@ ls *.txt
 ```
 What this is saying is that no matter what comes before, if it ends with “.txt” we want it.
 
-Test: move all .txt files into a new directrory called new_dir
+
+## 🧪 Exercise 6: Bandit the game
+
+Follow the link to Bandit, where you will need the knowledge that you have learned to successfully play the game.
+https://overthewire.org/wargames/bandit/
+
+## Assignment
+By next lab, turn in with proof you finished and got to level 34.
+
+
+
+
+
