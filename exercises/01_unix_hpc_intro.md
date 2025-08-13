@@ -46,6 +46,7 @@ Let's check where you are by <ins>p</ins>rinting your <ins>w</ins>orking <ins>d<
 ```bash
 pwd
 ```
+It should look something like this `/home/[netID]`
 
 Now <ins>l</ins>i<ins>s</ins>t the contents of your current directory using the `ls` command.
 ```bash
