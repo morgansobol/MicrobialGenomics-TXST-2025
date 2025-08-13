@@ -162,11 +162,11 @@ ls
 cd practice
 ```
 
-Now create files in this directory and use `ls` to check that the files are there.
+Now create files in this directory, we will use the command `touch`. Then use `ls` to check that the files are there.
 ```bash
-echo "Sample 1" > sample1.txt
-echo "Sample 2" > sample2.txt
-echo "Sample 3" > sample3.txt
+touch sample1.txt
+touch sample2.txt
+touch sample3.txt
 ls
 ```
 
@@ -220,28 +220,16 @@ nano sample1.txt
 
 This will open up an interface and allow you to add text. Add two sample names, A and B.
 ```bash
-sampleA
-sampleB
+sample_A
+sample_B
 ```
 
 To save the file and exit, we need to use some of the keyboard shortcuts listed on the bottom. Type "ctrl" + "x". It will ask if you want to save, type "y" and then press "enter". Alternatively, if you wanted to change the file name, you can before pressing enter. 
 
-To get a "sneak-peak" at the file, we can either use the `head` command to show the top of the file contents. There is also `tail` , which prints the last 10 lines of a file by default:
-```bash
-head sample1.txt
-```
+Now try adding "sample_C" and "sample_D" to sample2.txt file.
 
-If we wanted to count the number of lines, words, or characters a file has, we can use the `wc` or (<ins>w</ins>ord <ins>c</ins>ount) command. 
-```bash
-wc sample1.txt
-```
 
-To *only* get the number of lines in the file, use the argument -l.
-```bash
-wc -l sample1.txt
-```
-
-I also use nano to create files, you just simply type `nano`, followed by the file name you want and its extension. E.g.:
+I also use nano to create new files, you just simply type `nano`, followed by the file name you want and its extension. E.g.:
 ```bash
 nano mynewfile.txt
 ```
@@ -259,10 +247,29 @@ nano mynewfile.txt
 >This is just a convention, albeit an important one. Files contain bytes: it’s up to us and our programs to interpret those bytes according to the rules for plain text files, PDF documents, configuration files, images, and so on.
 >Naming a PNG image of a whale as whale.mp3 doesn’t somehow magically turn it into a recording of whalesong, though it might cause the operating system to try to open it with a music player when someone double-clicks it.
 
+Ok, back to viewing files.
+
+To get a "sneak-peak" at what we added in the sample1.txt file, we can either use the `head` command to show the top of the file contents. There is also `tail`, which prints the last 10 lines of a file by default:
+```bash
+head sample1.txt
+```
+There are a few other options to view files.
+For example, the command `less` lets you scroll through a file but not edit it. The command `cat` will display the whole file at once, so it is better to use for shorter files.
+Try both our on sample1.txt file.
+
+If we wanted to count the number of lines, words, or characters a file has, we can use the `wc` or (<ins>w</ins>ord <ins>c</ins>ount) command. 
+```bash
+wc sample1.txt
+```
+
+To *only* get the number of lines in the file, use the argument -l.
+```bash
+wc -l sample1.txt
+```
+How many lines are there? 
+
 
 ## 🧪 Exercise 5: Redirectors and Wildcards
-
-Go back to XX directory. 
 
 Redirectors change where the output of a command is going. Lets look at an example using a "pipe" (`|`).
 Remember our commands `ls` and `wc -l`? If we “pipe” (`|`) the `ls` command into the `wc -l` command, instead of printing the output from `ls` to the screen as usual, it will go into `wc -l` which will print out how many items there are in your current working directory:
@@ -277,6 +284,12 @@ head directory_contents.txt
 ```
 **It’s important to remember that the `>` redirector will overwrite the file we are pointing to if it already exists.**
 If we want to append output to a file, rather than overwrite it, we can use two signs, `>>` instead.
+
+Now the `cat` command, which we used above to view a file, also serves the purpose of combining (conCATenate) the content of files together. Let's see what happens when we concatenate sample1.txt and sample2.txt. 
+```bash
+cat sample1.txt sample2.txt >combined_1and2.txt
+head combined_1and2.txt
+```
 
 Now, wildcards are special characters that enable us to specify multiple items very easily. Let’s say we only want to look for files, in our current working directory, that end with the extension “.txt”. The * wildcard can help us with that.
 ```bash
