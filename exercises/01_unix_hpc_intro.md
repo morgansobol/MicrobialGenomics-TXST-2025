@@ -287,11 +287,18 @@ What this is saying is that no matter what comes before, if it ends with “.txt
 
 ## 🧪 Exercise 6: BashCrawl game
 
+In bashcrawl, you are an adventurer exploring an ancient castle. You will collect treasures in your inventory and encounter hazards along the way.
+
+The game will give you experience with commands you've been learning, and the Unix directory tree, permissions, environment variables, linking, globbing, and configuration.
+Earning the **master mason guild jacket** is the goal, because that means you have worked with all of the main features of Unix that I want you to be comfortable with. The evidence that you have completed this step is the tally_scroll you should generate at the end of your building job.
+
+Each time you enter a "room" (directory) use `ls` to see what is there. There is always a `scroll` file, read that first using cat scroll. Green files are the exectuable files, which you will use ./[insert file name] to execute. Follow what the output says, for example it will ask you to type something like this: `export I=amulet,$I`, which adds an object to your inventory. You can see your inventory with echo $I. Same goes for health, or HP: echo $HP.
+
 Follow this link to access a virtual executable environment hosting BashCrawl: https://mybinder.org/v2/gl/nthiery%2Fbashcrawl/HEAD
-When it loads, click the Terminal button and your game will begin. 
+When it loads, click the Terminal button and your game will begin. Have fun!
 
 ## Assignment
-Turn these questions in on canvas:
+Turn in the answers to these two questions on Canvas before the next lab (so by 1:59 pm 09/04). 
 1. What was in your final inventory?
 2. What were the contents of the tally_scroll file that you generated?
 
