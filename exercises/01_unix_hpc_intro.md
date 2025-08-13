@@ -16,9 +16,18 @@ By the end of this exercise, you should be able to:
 
 ---
 ## 🧪 Exercise 1: Accessing LEAP2 - TXST's high-performance computer (HPC)
-Connecting to an HPC system is typically done with a program known as “SSH” (Secure SHell) which is accessed through a Terminal. Linux and Mac users will find a Terminal program already installed on their computers. Windows users will need to install a Terminal emulator. I suggest using MobaXterm. If you do not already have it installed, please install the free version now: https://mobaxterm.mobatek.net/download.html. 
+Connecting to an HPC system is typically done with a program known as “SSH” (Secure SHell) which is accessed through a Terminal.
 
-The SSH program needs the web address of the server we want to access. You should have received an email from Shane Flaherty with your login information and the LEAP2 web address.
+Linux and Mac users will find a Terminal program already installed on their computers. Windows users will need to install a Terminal emulator. I suggest using MobaXterm. If you do not already have it installed, please install the free version now: https://mobaxterm.mobatek.net/download.html. 
+
+Now, the _Terminal_ is a text input and output environment where we can type commands and see the output. In other words, it is the "window" in which you enter the actual commands and those commands are interpreted and run by a _Shell_. 
+
+So the _Shell_ is the program inside the terminal that actually processes commands and returns the output. In most Linux and Mac operating systems, it uses a _Bash_ shell, which is essentially its own programming language and what we will use below. 
+
+In summary, think of it this way: Terminal is the TV and Shell is the program running the TV. 
+
+The SSH program allows us to connect to a remote computer/server over a network and execute commands and transfer files to this remote server. So, to access TXST's remote HPC, SSH requires the web address of the server. You should have received an email from Shane Flaherty with your login information and the LEAP2 web address.
+
 Open your terminal to test connecting to LEAP2. 
 
 ```bash
@@ -42,21 +51,31 @@ Type `passwd' and press ENTER to start
 
 ## 🧪 Exercise 2: Navigating the Filesystem
 
+Computers store file locations in a hierarchical structure. We are typically already used to navigating through this stucture by clicking on various folders (also known as directories) in a Windows Explorer window or a Mac Finder window. Just like we need to select the appropriate files in the appropriate locations there (in a Graphical User-Interface, or GUI), we need to do the same when working at a command-line interface. What this means in practice is that each file and directory has its own “address”, and that address is called its “path”.
+
+Additionally, there are two special locations in all Unix-based systems, so two more terms we should become familiar with: the “root” location and the current user’s “home” location. “Root” is where the address system of the computer starts; “home” is where the current user’s location starts (this is where you should be now)
+
+<img width="1511" height="1799" alt="image" src="https://github.com/user-attachments/assets/d051f1d5-91ee-44b7-b175-9471422c174b" />
+
 Let's check where you are by <ins>p</ins>rinting your <ins>w</ins>orking <ins>d</ins>irectory (i.e. where you currently are in the system).
 ```bash
 pwd
 ```
-It should look something like this `/home/[netID]`
+It should look something like this `/home/[netID]` and tell you that you are in the "home" location. 
 
 Now <ins>l</ins>i<ins>s</ins>t the contents of your current directory using the `ls` command.
 ```bash
 ls
 ```
+Don't be concerned, you should see nothing since we have not created any files or folders (i.e. directories, more on that later).
 
-Sometimes there are *hidden* files, typically configuration files, which begin with a dot (`.`). E.g., your bash profile is configured by the file ~/.bash_profile. To see these files use the **'ls'** *command* with the *argument* -a, to see <ins>a</ins>ll files, including hidden ones.
+Sometimes there are *hidden* files, typically configuration files, which begin with a dot (`.`). E.g., your bash profile is configured by the file ~/.bash_profile. Configuration files do things like store settings and preferences for programs, determine what programs are "turned-on" when you login, and customize how your shell behaves. 
+
+To see these *hidden* files use the **'ls'** *command* with the *argument* -a, to see <ins>a</ins>ll files, including hidden ones.
 ```bash
 ls -a
 ```
+You should see file names like these `.bash_history  .bash_logout  .bash_profile  .bashrc  .emacs  .kshrc  .mozilla  .ssh`. 
 
 We can also use `ls` to see the sizes of the files, in bytes, in our directories with the argument -l.
 ```bash
