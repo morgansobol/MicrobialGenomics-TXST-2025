@@ -15,17 +15,25 @@ By the end of this exercise, you should be able to:
 - Understand and run a basic bash script
 
 ---
-
-Before we begin exploring the terminal, let's download the exercise files from the Github like so:
+Before we begin exploring the command, let's download the exercise files from the GitHub like so:
 
 ```bash
 git clone link
 ```
-So you just ran your first command `git clone` which specifially allows us to copy files and data from a github page to here. 
+So you just ran your first command `git clone` which specifically allows us to copy files and data from a GitHub page to here. 
 
 ## 🧪 Exercise 1: Navigating the Filesystem
 
 Let's establish some basics first. 
+
+Linux and Mac users will find a Terminal program already installed on their computers. Let's stick with the computers in the class for now. Later we can get you set up on your personal computer if you own a Window/PC because you will need to install a Terminal emulator. 
+
+Now, the _Terminal_ is a text input and output environment where we can type commands and see the output. In other words, it is the "window" in which you enter the actual commands and those commands are interpreted and run by a _Shell_. 
+
+So the _Shell_ is the program inside the terminal that actually processes commands and returns the output. In most Linux and Mac operating systems, it uses a _Bash_ shell, which is essentially its own programming language and what we will use below. 
+
+In summary, think of it this way: Terminal is the TV and Shell is the program running the TV. 
+
 
 Computers store file locations in a hierarchical structure. We are typically already used to navigating through this stucture by clicking on various folders (also known as directories) in a Windows Explorer window or a Mac Finder window. Just like we need to select the appropriate files in the appropriate locations there (in a Graphical User-Interface, or GUI), we need to do the same when working at a command-line interface. What this means in practice is that each file and directory has its own “address”, and that address is called its “path”.
 
