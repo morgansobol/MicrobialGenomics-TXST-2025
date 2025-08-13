@@ -285,14 +285,15 @@ ls *.txt
 What this is saying is that no matter what comes before, if it ends with “.txt” we want it.
 
 
-## 🧪 Exercise 6: Bandit the game
+## 🧪 Exercise 6: BashCrawl game
 
-Follow the link to Bandit, where you will need the knowledge that you have learned to successfully play the game.
-https://overthewire.org/wargames/bandit/
+Follow this link to access a virtual executable environment hosting BashCrawl: https://mybinder.org/v2/gl/nthiery%2Fbashcrawl/HEAD
+When it loads, click the Terminal button and your game will begin. 
 
 ## Assignment
-By next lab, turn in with proof you finished and got to level 34.
-
+Turn these questions in on canvas:
+1. What was in your final inventory?
+2. What were the contents of the tally_scroll file that you generated?
 
 
 
