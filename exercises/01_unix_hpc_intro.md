@@ -299,8 +299,10 @@ When it loads, click the Terminal button and your game will begin. Have fun!
 
 ## Assignment
 Turn in the answers to these two questions on Canvas before the next lab (so by 1:59 pm 09/04). 
-1. What was in your final inventory?
-2. What were the contents of the tally_scroll file that you generated?
+Send me three screenshots:
+1. 
+
+Or https://web.mit.edu/mprat/Public/web/Terminus/Web/main.html
 
 
 
