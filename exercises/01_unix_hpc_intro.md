@@ -48,14 +48,24 @@ If you entered your password appropriately, congratulations, you’re now connec
 Now, if it is your first time accessing LEAP2, we will change your password as per Shane's request.
 Type `passwd' and press ENTER to start 
 
+Before we begin exploring the HPC, let's download the exercise files from th Github like so:
+
+```bash
+git clone link
+```
+So you just ran your first command `git clone` which specifially allows us to copy files and data from a github page to here. 
 
 ## 🧪 Exercise 2: Navigating the Filesystem
+
+Let's establish some basics first. 
 
 Computers store file locations in a hierarchical structure. We are typically already used to navigating through this stucture by clicking on various folders (also known as directories) in a Windows Explorer window or a Mac Finder window. Just like we need to select the appropriate files in the appropriate locations there (in a Graphical User-Interface, or GUI), we need to do the same when working at a command-line interface. What this means in practice is that each file and directory has its own “address”, and that address is called its “path”.
 
 Additionally, there are two special locations in all Unix-based systems, so two more terms we should become familiar with: the “root” location and the current user’s “home” location. “Root” is where the address system of the computer starts; “home” is where the current user’s location starts (this is where you should be now)
 
 <img width="1511" height="1799" alt="image" src="https://github.com/user-attachments/assets/d051f1d5-91ee-44b7-b175-9471422c174b" />
+
+
 
 Let's check where you are by <ins>p</ins>rinting your <ins>w</ins>orking <ins>d</ins>irectory (i.e. where you currently are in the system).
 ```bash
@@ -67,9 +77,9 @@ Now <ins>l</ins>i<ins>s</ins>t the contents of your current directory using the 
 ```bash
 ls
 ```
-Don't be concerned, you should see nothing since we have not created any files or folders (i.e. directories, more on that later).
+You should see 'github directory', we'll explore this in a minute. 
 
-Sometimes there are *hidden* files, typically configuration files, which begin with a dot (`.`). E.g., your bash profile is configured by the file ~/.bash_profile. Configuration files do things like store settings and preferences for programs, determine what programs are "turned-on" when you login, and customize how your shell behaves. 
+Often, there are also *hidden* files, typically configuration files, which begin with a dot (`.`). E.g., your bash profile is configured by the file ~/.bash_profile. Configuration files do things like store settings and preferences for programs, determine what programs are "turned on" when you log in, and customize how your shell behaves. 
 
 To see these *hidden* files use the **'ls'** *command* with the *argument* -a, to see <ins>a</ins>ll files, including hidden ones.
 ```bash
@@ -82,12 +92,12 @@ We can also use `ls` to see the sizes of the files, in bytes, in our directories
 ls -l
 ```
 
-### I prefer to add -lh, the "h" prints the sizes in a <ins>h</ins>uman-readable format.
+I prefer to add -lh, the "h" prints the sizes in a <ins>h</ins>uman-readable format.
 ```bash
 ls -lh
 ```
 
-Ok, lets move into other directories, or <ins>c</ins>hange <ins>d</ins>irectories using the `cd` command. Move to the XX directory and use `pwd` and `ls` to see where you are and what is there.
+Ok, lets move into our Github downloaded directorie, or <ins>c</ins>hange <ins>d</ins>irectories using the `cd` command. Move to the the directory and use `pwd` and `ls` to see where you are and what is there.
 ```bash
 cd xx/
 pwd
