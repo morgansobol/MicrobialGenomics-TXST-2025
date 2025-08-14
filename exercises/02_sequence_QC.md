@@ -36,55 +36,57 @@ cd working_dir/
 mkdir fastqc
 cd fastqc
 ```
-Before we run FastQC, we need to create and activate the Conda environment that contains the program.
+
+Before we run FastQC, we need to install the programs and activate the Conda environment that contains the program.
 ```bash
 create -y -n seqQC -c conda-forge -c bioconda -c defaults \
              cutadapt fastqc trimmomatic multiqc
 conda activate seqQC
 ```
-Now to run the program we do the following, calling the sequence reads from the rawseq/16s directory like so:
+
+Now to run the program we do the following, calling the sequence reads from the rawseq/16s directory like so but having the output placed in our current working directory:
 ```bash
-fastqc 
+fastqc ../../data_dir/rawseqs/16s/*.fq -o .
 ```
-We should get an .html file to view the outputs. You can look at them individually like so:
+
+The output is an .html file that you can view. You can look at them individually like so:
 ```bash
 open B1_sub_R1_fastqc.html
 ```
 
-But instead of checking each file individually, we can use the tool `multiqc` which will aggregate all of our results together.
+However, instead of checking each file individually, we can instead use the tool `multiqc` which will aggregate all of our results together.
 ```bash
 multiqc .
 open multiqc_report.html
 ```
 
-Now we need to trim both read 1 and read 2 to improve their quality.
+Now we need to trim the primers off the reads and low-quality bases, both from read 1 and read 2, to improve their quality.
 
 
 ## 🧪 Exercise 2: Removing primers with Cutadapt 
-Don't forget to go back one directory, into the working_dir, and create a new directory called cutadapt.
+
+Let's go back one directory, into the working_dir, and create a new directory called cutadapt.
 ```bash
 cd ..
 mkdir cutadapt
 cd cutadapt/
 ```
+
 Now copy over the data files we are working with to our current directory:
 ```bash
 cp ../rawreads/*.fq .
 ```
 
-In our working directory there are 20 samples with forward (R1) and reverse (R2) reads with per-base-call quality information, so 40 fastq files (.fq). I typically like to have a file with all the sample names to use for various things throughout, so here’s making that file based on how these sample names are formatted. 
-```bash
-ls *_R1.fq | cut -f1 -d "_" > samples
-```
+Now we will run cutadapt on paired-end mode, because, remember from lecture, most cases reads are sequenced in the forward and reverse direction, meaning each forward read should have a paired read. We will try with one sample first before running as a loop to process all samples at once. 
 
-Now we will run cutadapt on paired-end mode, because remember from lecture, most cases reads are sequenced in the forward and reverse direction, meaning each forward read should have a paired read. 
 ```bash
 cutadapt -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
          -A ^GGACTACHVGGGTWTCTAAT...TTACCGCGGCKGCTGGCAC \
          -m 215 -M 285 --discard-untrimmed \
          -o B1_sub_R1_trimmed.fq -p B1_sub_R2_trimmed.fq \
-         B1_sub_R1.fq B1_sub_R2.fq 
+         ../../data_dir/rawseqs/16s/B1_sub_R1.fq ../../data_dir/rawseqs/16s/B1_sub_R2.fq 
 ```
+
 We are specifying the primers for the forward read with the -a flag, giving it the forward primer (in normal orientation), followed by three dots (required by cutadapt to know they are “linked”, with bases in between them, rather than right next to each other), then the reverse complement of the reverse primer. 
 
 Then for the reverse reads, specified with the -A flag, we give it the reverse primer (in normal 5’-3’ orientation), three dots, and then the reverse complement of the forward primer. Both of those have a ^ symbol in front at the 5’ end indicating they should be found at the start of the reads (which is the case with this particular setup). The minimum read length (set with -m) and max (set with -M) were based roughly on 10% smaller and bigger than would be expected after trimming the primers. --discard-untrimmed states to throw away reads that don’t have these primers in them in the expected locations. Then -o specifies the output of the forwards reads, -p specifies the output of the reverse reads, and the input forward and reverse are provided as positional arguments in that order.
@@ -95,7 +97,7 @@ Then for the reverse reads, specified with the -A flag, we give it the reverse p
 Ok, let's take a quick look to see that the primers were trimmed off. 
 ```bash
 ### R1 BEFORE TRIMMING PRIMERS
-head -n 2 B1_sub_R1.fq
+head -n 2 ../../data_dir/rawseqs/16s/B1_sub_R1.fq
 # @M02542:42:000000000-ABVHU:1:1101:8823:2303 1:N:0:3
 # GTGCCAGCAGCCGCGGTAATACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTGCGCAGGCGGTCTTGT
 # AAGACAGAGGTGAAATCCCTGGGCTCAACCTAGGAATGGCCTTTGTGACTGCAAGGCTGGAGTGCGGCAGAGGGGGATGG
@@ -112,13 +114,12 @@ head -n 2 B1_sub_R1_trimmed.fq
 
 
 ### R2 BEFORE TRIMMING PRIMERS
-head -n 2 B1_sub_R2.fq
+head -n 2 ../../data_dir/rawseqs/16s/B1_sub_R2.fq
 # @M02542:42:000000000-ABVHU:1:1101:8823:2303 2:N:0:3
 # GGACTACCCGGGTATCTAATCCTGTTTGCTCCCCACGCTTTCGTGCATGAGCGTCAGTGCAGGCCCAGGGGACTGCCTTC
 # GCCATCGGTGTTCCTCCGCATATCTACGCATTTCACTGCTACACGCGGAATTCCATCCCCCTCTGCCGCACTCCAGCCTT
 # GCAGTCACAAAGGCCATTCCTAGGTTGAGCCCAGGGATTTCACCTCTGTCTTACAAGACCGCCTGCGCACGCTTTACGCC
 # CAGTAATTCCGATTAACGCTCGCACCCTACGTATTACCGCGGCTGCTGGCACTCACACTC
-
 
 ### R2 AFTER TRIMMING PRIMERS
 head -n 2 B1_sub_R2_trimmed.fq
@@ -129,32 +130,65 @@ head -n 2 B1_sub_R2_trimmed.fq
 # CGCACCCTACGTA
 ```
 
-Now, on to doing them all with a loop, here is how we can run it on all our samples at once. Since we have a lot of samples here, I’m redirecting the “stdout” (what’s printing the stats for each sample) to a file called *utadapt_primer_trimming_stats.txt* so we can more easily view and keep track of if we’re losing a ton of sequences or not by having that information stored somewhere – instead of just plastered to the terminal window. We’re also going to take advantage of another convenience of cutadapt – by adding the extension .gz to the output file names, it will compress them for us.
+We are going to trim those again in the loop, so let's delete these trimmed files so as not to have duplicates.
+```bash
+rm *.fq
+ls
+```
+
+Now, on to doing them all with a loop, here is how we can run it on all our samples at once. Since we have a lot of samples here, I’m redirecting the “stdout” (what’s printing the stats for each sample) to a file called *cutadapt_primer_trimming_stats.txt* so we can more easily view and keep track of if we’re losing a ton of sequences or not by having that information stored somewhere – instead of just plastered to the terminal window. We’re also going to take advantage of another convenience of cutadapt – by adding the extension .gz to the output file names, it will compress the files for us.
 
 ```bash
-for sample in $(cat samples)
-do
+nano cutadapt.sh
+```
+
+Add this to the bash file you just created.
+```bash
+#!/usr/bin/env bash
+
+DIR="../../data_dir/rawseqs/16s"
+
+for R1 in ${DIR}/*_R1.fq; do
+    # derive sample name by stripping path and suffix
+    sample=$(basename "$R1" _R1.fq)
+    R2="${DIR}/${sample}_R2.fq"
 
     echo "On sample: $sample"
-    
-    cutadapt -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
-             -A ^GGACTACHVGGGTWTCTAAT...TTACCGCGGCKGCTGGCAC \
-             -m 215 -M 285 --discard-untrimmed \
-             -o ${sample}_sub_R1_trimmed.fq.gz -p ${sample}_sub_R2_trimmed.fq.gz \
-             ${sample}_sub_R1.fq ${sample}_sub_R2.fq \
-             >> cutadapt_primer_trimming_stats.txt 2>&1
 
+    cutadapt \
+        -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
+        -A ^GGACTACHVGGGTWTCTAAT...TTACCGCGGCKGCTGGCAC \
+        -m 215 -M 285 --discard-untrimmed \
+        -o ${sample}_R1_trimmed.fq.gz \
+        -p ${sample}_R2_trimmed.fq.gz \
+        "$R1" "$R2" \
+        >> cutadapt_primer_trimming_stats.txt 2>&1
 done
 ```
-
-You can look through the output of the cutadapt stats file we made (“cutadapt_primer_trimming_stats.txt”) to get an idea of how things went. Here’s a little one-liner to look at what fraction of reads were retained in each sample (column 2) and what fraction of bps were retained in each sample (column 3):
+Now run it
 ```bash
-paste samples <(grep "passing" cutadapt_primer_trimming_stats.txt | cut -f3 -d "(" | tr -d ")") <(grep "filtered" cutadapt_primer_trimming_stats.txt | cut -f3 -d "(" | tr -d ")")
+bash cutadapt.sh
+ls
 ```
 
-Let's also check again with FastQC to see how that improved the output
+You should see all trimmed files here and the output stats file.
+I typically like to have a file with all the sample names to use for various things throughout, so here’s making that file based on how these sample names are formatted. 
+```bash
+ls *_R1_trimmed.fq.gz | cut -f1 -d "_" > samples.txt
+```
+
+Now you can look through the output of the cutadapt stats file we made (“cutadapt_primer_trimming_stats.txt”) to get an idea of how things went. Here’s a little one-liner to look at what fraction of reads were retained in each sample (column 2) and what fraction of bps were retained in each sample (column 3):
+```bash
+paste samples.txt <(grep "passing" cutadapt_primer_trimming_stats.txt | cut -f3 -d "(" | tr -d ")") <(grep "filtered" cutadapt_primer_trimming_stats.txt | cut -f3 -d "(" | tr -d ")")
+```
+
+Great, so in all cases >90% of reads were kept. 
+
+Let's also check again with FastQC/MultiQC to see how that improved the output
 ```bash
 cd ../fastqc/
-fastqc ../cutadapt/R1.fq R2.fq
+fastqc *.fq -o .
+multiqc .
+open multiqc_report.html
 ```
-With primers removed, we’re now ready to switch to R and start using DADA2!
+With primers removed, we’re now ready to switch to R Studio and start using DADA2!
