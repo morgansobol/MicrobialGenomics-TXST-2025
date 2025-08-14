@@ -165,6 +165,15 @@ for R1 in ${DIR}/*_R1.fq; do
         >> cutadapt_primer_trimming_stats.txt 2>&1
 done
 ```
+
+- a = forward adapter
+- A = reverse adapter
+- m 215 = will discard all reads below 215 bp 
+- M 285 = will discard all reads larger than 285 bp
+- discard-untrimmed = discards reads in which no adapter match was found.
+- o = output R1 
+- p = output R2
+
 Now run it
 ```bash
 bash cutadapt.sh
@@ -187,7 +196,9 @@ Great, so in all cases >90% of reads were kept.
 Let's also check again with FastQC/MultiQC to see how that improved the output
 ```bash
 cd ../fastqc/
-fastqc *.fq -o .
+mkdir trimmed
+cd trimmed/
+fastqc ../../cutadapt/*.fq.gz -o .
 multiqc .
 open multiqc_report.html
 ```
