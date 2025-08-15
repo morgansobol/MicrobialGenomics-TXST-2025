@@ -1,16 +1,19 @@
-# Week XX: 16S Amplicon analysis - Part 1
+# Week 2: 16S Amplicon analysis - Part 1
 
-Welcome to Week XX! 
-This week, you will finally start analyzing data, specially performing 16S amplicon analysis. From here on out, unless noted, we are working in R, not at the Unix-like command line. If you find you need some refresher in R basics check out this page: https://astrobiomike.github.io/R/.
+Welcome to Week 2! 
+This week, you will finally start analyzing data. Specifically, we will be performing 16S amplicon analysis. From here on out, unless noted, we are working in R, not at the Unix-like command line. If you find you need a refresher in R basics, check out this page: https://astrobiomike.github.io/R/.
 
-We will be following Dada2's tutortial + Mike Lee's tutorial on Dada2, using Mike's data (with some modifications) below. Thanks Mike!
+We will be following DADA2's tutorial + Mike Lee's tutorial on DADA2, using Mike's data (with some modifications) below. Thanks Mike!
 
 ---
 ## 🧠 Learning Objectives
 
 By the end of this exercise, you should be able to:
 
-- 
+- Interpret DADA2 error learning and ASV inference, and describe why exact sequence variants (ASVs) are preferred over OTUs.
+- Assess read merging and chimera removal, including identifying potential causes of sequence loss at these stages.
+- Classify ASVs taxonomically and recognize limitations of reference databases. 
+- Learn the importance of sampling blanks and decontamination
 
 ## Quick refresher on commonly used R scripts 
 
