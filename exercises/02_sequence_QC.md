@@ -8,7 +8,10 @@ This week, you'll continue to get used to using the command line while learning 
 
 By the end of this exercise, you should be able to:
 
-- 
+- Understand the fastq sequence format.
+- Evaluate raw sequencing data quality and explain how filtering/trimming decisions affect read retention.
+- Learn the importance of read QC for downstream analyses. 
+  
 Preparing your raw reads from the sequencer is typically the 1st step in any genomics pipeline. Most likely you will get your raw reads back from the sequencing facility in fastq formatted files.
 ### What is a fastq file?
 
