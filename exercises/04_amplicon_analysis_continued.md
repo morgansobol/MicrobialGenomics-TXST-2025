@@ -22,7 +22,7 @@ library(DESeq2) ; packageVersion("DESeq2")
 library(dendextend) ; packageVersion("dendextend") 
 library(viridis) ; packageVersion("viridis") 
 
-setwd("~/dada2_amplicon_ex_workflow")
+setwd("[insert path to directory you want to be in]")
 
 list.files() # make sure our files from last time are here
 # ASVs-no-contam.fa
@@ -32,10 +32,11 @@ list.files() # make sure our files from last time are here
 
 # ok, now moving on
 
-rm(list=ls())
-  
+rm(list=ls()) # remove any prior objects, start from a clean slate
+
+# re-read in our data as an R table and remove blanks from count table
 count_tab <- read.table("ASVs_counts-no-contam.tsv", header=T, row.names=1,
-             check.names=F, sep="\t")[ , -c(1:4)]   ## remove blanks from count table
+             check.names=F, sep="\t")[ , -c(1:4)]  
 
 ```
 >[!Note]
