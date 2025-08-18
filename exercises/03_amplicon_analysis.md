@@ -31,31 +31,43 @@ dir()
 ```
 Import a csv file
 ```R
-iris_df <-read.csv("path/to/a/dataset/called/iris.csv",
+filename_df <-read.csv("path/to/a/dataset/ending/in/filename.csv",
                    header = TRUE, sep=",", strip.white=TRUE, stringsAsFactors=FALSE)
 ```
 List column and row names of the data
 ```R
-colnames(iris_df)
-rownames(iris_df)
+colnames(filename_df)
+rownames(filename_df)
 ```
 See the structure of the data
 ```R
-str(iris_df)
+str(filename_df)
 ```
 View the data 
 ```R
-view(iris_df)
+view(filename_df)
 ```
-Get basics stats
+Get basic stats
 ```R
-summary(iris_df)
+summary(filename_df)
 ```
 
 Write a table/data matrix as a tab-delimited file
 ```R
 write.table(object, "filename.tsv", sep="\t")
 ```
+
+Ok, let's begin!
+
+First, let's learn a bit of where the sequences we have been working on come from:
+
+Mike and his team were exploring an underwater mountain ~3 km down at the bottom of the Pacific Ocean that serves as a low-temperature (~5-10°C) hydrothermal venting site. This amplicon dataset was generated from DNA extracted from crushed basalts collected from across the mountain with the goal being to begin characterizing the microbial communities of these deep-sea rocks. No one had ever been here before, so as is often the purpose of marker-gene sequencing, this was just a broad-level community survey. The sequencing was done on the Illumina MiSeq platform with 2x300 paired-end sequencing using primers targeting the V4 region of the 16S rRNA gene. There are 20 samples total: 4 extraction “blanks” (nothing added to DNA extraction kit), 2 bottom-water samples, 13 rocks, and one biofilm scraped off a rock. 
+
+In the following figure, overlain on the map are the rock sample collection locations, and the panes on the right show examples of the 3 distinct types of rocks collected: 1) basalts with highly altered, thick outer rinds (>1 cm); 2) basalts that were smooth, glassy, thin exteriors (~1-2 mm); and 3) one calcified carbonate.
+
+<img width="800" height="436" alt="image" src="https://github.com/user-attachments/assets/aa197211-0392-4b63-998a-6e32de69efb5" />
+
+This work was published, so I encourage you to check it out: https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2015.01470/full 
 
 ## 🧪 Step 1: Setting up the working environment
 ```R
@@ -194,6 +206,11 @@ plotErrors(err_reverse_reads, nominalQ=TRUE)
 The red line is what is expected based on the quality score, the black line represents the estimate, and the black dots represent the observed. Generally speaking, you want the observed (black dots) to track well with the estimated (black line). So things look good and we can move on!
 
 ## 🧪 Step 4: Dereplication
+
+Dereplication is a common step in many amplicon processing workflows. Instead of keeping 100 identical sequences and doing all downstream processing to all 100, you can keep/process one of them, and just attach the number 100 to it. When DADA2 dereplicates sequences, it also generates a new quality-score profile of each unique sequence based on the average quality scores of each base of all of the sequences that were replicates of it. 
+
+The dereplication step is technically no longer listed as part of the standard dada2 tutorial, as it is performed by the dada() step if given filenames.
+But, it can be lighter on memory requirements to run them as separate steps like done here, so it is left this way here for the sake of keeping things going. 
 
 ```R
 # Dereplication -----------------------------------------------------------
