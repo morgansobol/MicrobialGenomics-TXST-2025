@@ -212,6 +212,7 @@ But, before we do that, let's prepare a new directory to work in with everything
 cd ../../
 mkdir dada2
 cd dada2
+cp ../cutadapt/samples.txt .
 ln -s ../cutadapt/*.fq.gz .
 ls
 ```
