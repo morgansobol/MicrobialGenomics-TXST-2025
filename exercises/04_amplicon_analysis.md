@@ -105,6 +105,8 @@ setwd("[insert path to directory you want to be in]")
 list.files() # make sure what we think is here is actually here
 dir() # this works too
 
+rm(list=ls()) # remove any prior objects, start from a clean slate
+
 # Set Up Our Variables ----------------------------------------------------
 
 ## first we're setting a few variables we're going to use ##
