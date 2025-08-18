@@ -206,3 +206,15 @@ multiqc .
 open multiqc_report.html
 ```
 With primers removed, we’re now ready to switch to R Studio and start using DADA2!
+
+But, before we do that, let's prepare a new directory to work in with everything we need.
+```bash
+cd ../../
+mkdir dada2
+cd dada2
+ln -s ../cutadapt/*.fq.gz .
+ls
+```
+I am introducing a new command here `ln`. This command creates a symbolic (hence -s) link, also known as a symlink or soft link. This is a special type of file that points to another file or directory. Symbolic links are commonly used to create shortcuts or aliases for files or directories located in the file system. This allows us to use those files in this directory, without having to make a duplicate, hard copy. 
+
+Ok, now we can switch to R and process these reads (: 
