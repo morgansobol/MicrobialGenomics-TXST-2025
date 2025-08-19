@@ -1,8 +1,11 @@
 # Week XX: 16S Amplicon analysis - Part 2
 
-In this tutorial we will continue working with 16S amplicon data, this time comparing samples and performing statistical analysis. We will continue working in R. 
+In this tutorial, we will continue working with 16S amplicon data, this time comparing samples and performing statistical analysis. We will continue working in R, but handing off our Dada2 processed samples to the package Phyloseq. 
 
-We will continue following Dada2's tutorial + Mike Lee's tutorial on Dada2, using Mike's data (with some modifications) below. Thanks Mike!
+We will continue following Dada2's tutorial + Mike Lee's tutorial on Dada2, using Mike's data (with some modifications) below. Thanks all for the great documentation!
+https://benjjneb.github.io/dada2/tutorial_1_8.html 
+https://astrobiomike.github.io/amplicon/dada2_workflow_ex#differential-abundance-analysis-with-deseq2
+https://blogs.oregonstate.edu/earthmotes/2021/09/28/dada2-pipeline-for-16s-datasets-in-r/
 
 ---
 ## 🧠 Learning Objectives
@@ -57,7 +60,9 @@ sample_info_tab <- read.table("sample_info.tsv", header=T, row.names=1,
  # and setting the color column to be of type "character", which helps later
 sample_info_tab$color <- as.character(sample_info_tab$color)
 
-# take a peek at the data we have on each sample
+# take a peek at the data we have on each sample. 
+# The rownames of the sample_info_tab must be the same as the column names of the count table for graphing later on. This should be the sample sites in the same order.
+
 sample_info_tab
 ```
 
@@ -69,10 +74,52 @@ Taking a look at the `sample_info_tab`, we see it has the 16 samples as rows, an
 
 This table can be made anywhere (e.g. in R, in excel, at the command line), you just need to make sure you read it into R properly (which you should always check just like we did here to make sure it came in correctly).
 
-## 🧪 Step 2: Normalize data
-Why do we need to normalize our data? Well sequence runs don't always go as planned, so we should expect some differences in sampling depths in our samples, that may not be reflective of that sample's true sequence abundance. 
+## 🧪 Step 2: Make a Phyloseq Object
+```R
+# Make a Phyloseq object --------------------------------------------------
 
-There has been some debate in the field about what normalization method to apply. Ultimately, it comes down to your sample types. Here we will briefly discuss the main methods, rarefaction and 
+count_tab_phy <- otu_table(count_tab, taxa_are_rows=T)
+sample_info_tab_phy <- sample_data(sample_info_tab)
+tax_tab_phy <- tax_table(tax_tab)
+ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
+ASV_physeq
+```
+
+Should see something like this, telling us that all the info we want is in the Phyloseq object:
+```
+phyloseq-class experiment-level object
+otu_table()   OTU Table:         [ 2498 taxa and 16 samples ]
+sample_data() Sample Data:       [ 16 samples by 4 sample variables ]
+tax_table()   Taxonomy Table:    [ 2498 taxa by 7 taxonomic ranks ]
+```
+
+## 🧪 Step 3: Normalize data
+
+First, let's check the sequence abundance at all our sites and graph it for visualization. Sequence runs don't always go as planned, so we should expect some differences in sampling depths in our samples, which is most likely not truly reflective of that sample's true sequence abundance. 
+
+```R
+# Subsample data ----------------------------------------------------------
+
+Sequences_per_sample <- sample_sums(phyloseq_object)
+Sequences_per_sample
+sample_richness <- data.frame(Sequences = Sequences_per_sample, Sample_Site = Group)
+```
+
+You see, we have almost a whole order of magnitude difference in sequence abundances. If we compare diversity metrics directly without accounting for these differences, the results could be biased toward the deeper sequenced samples, which may appear artificially more diverse simply because more sequences were recovered.
+
+To make fair statistical comparisons across samples, we need to account for these differences in sequencing depth. Rarefaction does this by subsampling each sample down to the same number of sequences, repeated many times, and averaging across the subsamplings. This ensures that observed differences in diversity reflect biology rather than uneven sequencing effort
+
+>[!NOTE] There has been some debate in the field about what normalization methods to apply.
+>
+> McMurdie & Holmes 2014 claim too much data is lost when you use rarefraction, and instead suggest to use Variance Stabilizing Transformation offered thorugh DEseq2. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
+>
+>However, Dr. Pat Schloss at the University of Michichan, who is a microbial ecologist that wrote one of the OG 16S amplicon softwares (Mothur) and is very knowledgeable in this field, wrote a rebuttal to that paper and providing evidence that rarefraction/subsampling is still superior in most cases. (paper: https://journals.asm.org/doi/10.1128/msphere.00355-23?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed).
+>
+>He has also published a few Youtube videos on this and other stuff, I suggest checking it out if interested. Ex: https://www.youtube.com/watch?v=t5qXPIS-ECU&list=PLmNrK_nkqBpJuhS93PYC-Xr5oqur7IIWf&index=2&ab_channel=RiffomonasProject
+
+
+
+
 
 DESeq2 creates negative values resulting from the log-like transformation are set to zero, causing the method to ignore many rare species completely. Additionally, many microbial environments are extremely variable in microbial composition, which would *violate* DESeq normalization assumptions of a constant abundance of a majority of species and of a balance of increased/decreased abundance for those species that do change.
 ```R
