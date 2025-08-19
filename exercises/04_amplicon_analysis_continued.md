@@ -109,7 +109,7 @@ You see, we have almost a whole order of magnitude difference in sequence abunda
 
 To make fair statistical comparisons across samples, we need to account for these differences in sequencing depth. Rarefaction does this by subsampling each sample down to the same number of sequences, repeated many times, and averaging across the subsamplings. This ensures that observed differences in diversity reflect biology rather than uneven sequencing effort
 
->[!NOTE] There has been some debate in the field about what normalization methods to apply.
+[!NOTE] There has been some debate in the field about what normalization methods to apply.
 >
 > McMurdie & Holmes 2014 claim too much data is lost when you use rarefraction, and instead suggest to use Variance Stabilizing Transformation offered thorugh DEseq2. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
 >
