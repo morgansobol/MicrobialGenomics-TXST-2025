@@ -92,8 +92,6 @@ BiocManager::install("decontam")
 BiocManager::install("DECIPHER")
 BiocManager::install("phyloseq")
 BiocManager::install("vegan")
-BiocManager::install("DESeq2")
-
 
 # load the packages
 library(dada2); packageVersion("dada2") #1.34.0
@@ -102,7 +100,6 @@ library(DECIPHER); packageVersion("decipher") #3.2.0
 library(tidyverse) ; packageVersion("tidyverse") # 1.3.1
 library(phyloseq) ; packageVersion("phyloseq") # 1.50.0
 library(vegan) ; packageVersion("vegan") # 2.7.1
-library(DESeq2) ; packageVersion("DESeq2") # 1.46.0
 library(dendextend) ; packageVersion("dendextend") # 1.19.1
 library(viridis) ; packageVersion("viridis") # 0.6.5
 
