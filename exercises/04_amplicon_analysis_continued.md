@@ -85,7 +85,7 @@ ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
 ASV_physeq
 ```
 
-Should see something like this, telling us that all the info we want is in the Phyloseq object:
+You should see something like this, telling us that all the info we want is in the Phyloseq object:
 ```
 phyloseq-class experiment-level object
 otu_table()   OTU Table:         [ 2498 taxa and 16 samples ]
@@ -112,27 +112,26 @@ To make fair statistical comparisons across samples, we need to account for thes
 >[!NOTE]
 >There has been some debate in the field about what normalization methods to apply.
 >
-> McMurdie & Holmes 2014 claim too much data is lost when you use rarefraction, and instead suggest to use Variance Stabilizing Transformation offered thorugh DEseq2. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
+> McMurdie & Holmes 2014 claim that too much data is lost when you use rarefaction, and instead suggest using the Variance Stabilizing Transformation offered thorugh DESeq2. But many microbial environments are extremely variable in microbial composition, which would *violate* DESeq normalization assumptions of a constant abundance of a majority of species and of a balance of increased/decreased abundance for those species that do change. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
 >
->However, Dr. Pat Schloss at the University of Michichan, who is a microbial ecologist that wrote one of the OG 16S amplicon softwares (Mothur) and is very knowledgeable in this field, wrote a rebuttal to that paper and providing evidence that rarefraction/subsampling is still superior in most cases. (paper: https://journals.asm.org/doi/10.1128/msphere.00355-23?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed).
+>Indeed, Dr. Pat Schloss at the University of Michigan, who is a microbial ecologist who wrote one of the OG 16S amplicon softwares (Mothur) and is very knowledgeable in this field, wrote a rebuttal to that paper, providing evidence that *true* rarefaction/subsampling is still superior in dealing with uneven sequence depth. (paper 1: https://journals.asm.org/doi/10.1128/msphere.00355-23?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed, paper 2: https://journals.asm.org/doi/full/10.1128/msphere.00354-23) 
 >
->He has also published a few Youtube videos on this and other stuff, I suggest checking it out if interested. Ex: https://www.youtube.com/watch?v=t5qXPIS-ECU&list=PLmNrK_nkqBpJuhS93PYC-Xr5oqur7IIWf&index=2&ab_channel=RiffomonasProject
+>He has also published a few Youtube videos on this and other stuff, I suggest checking it out if interested. https://www.youtube.com/watch?v=t5qXPIS-ECU&list=PLmNrK_nkqBpJuhS93PYC-Xr5oqur7IIWf&index=2&ab_channel=RiffomonasProject
 
+Before we use rarefaction (with multiple sampling), to normalize our data, we can take a look at a rarefaction curve to get a sense of how sequencing depth relates to observed diverity of ASVs.
 
-
-
-
-DESeq2 creates negative values resulting from the log-like transformation are set to zero, causing the method to ignore many rare species completely. Additionally, many microbial environments are extremely variable in microbial composition, which would *violate* DESeq normalization assumptions of a constant abundance of a majority of species and of a balance of increased/decreased abundance for those species that do change.
 ```R
-# rarefy data
-asvs_rare = t(rrarefy(t(asvs_count), sample_size))
+# rarefraction curve 
+rarecurve(t(count_tab), step=100, col=sample_info_tab$color, lwd=2, ylab="ASVs", label=F, legend=TRUE)
+abline(v=(min(rowSums(t(count_tab)))))
+
 ```
-To get an idea of whether your rarefied data is representative of the samples, we can also plot a rarefaction curve:
-```R
-# plot curves
-rarecurve(t(asvs_count), step=1000, label=F)
-# add line to show rarefaction
-abline(v=sample_size, col="red")
+Note the line we drew with `abline` shows us what would happen if we just subsampled all samples only once at the minimum values of sequences in a sample, i.e. 1897. We would certainly lose some diversity that way, to the point of McMurdie & Holmes. Let's test this theory out
+
+
+
+
+
 ```
 You can see the depth to which they have been rarefied by the red line. Ideally, the line intersects the sample curves when they are relatively horizontal.
 
@@ -141,6 +140,7 @@ In ecology, the diversity of a community, or for us a sample, refers to various 
 
 ### Beta diversity
 Beta diversity involves calculating metrics such as distances or dissimilarities based on pairwise comparisons of samples so we can relate samples to each other. 
+**Beta diversity**, also called "between sample diversity" is a measurement of the distance, or difference, between samples. First step will be to calculate the beta diversity, second to identify batch effects, and lastly to determine project effects
 
 Typically the first thing to do is generate some exploratory visualizations like ordinations and hierarchical clusterings. These give you a quick overview of how your samples relate to each other and can be a way to check for problems like batch effects.
 
