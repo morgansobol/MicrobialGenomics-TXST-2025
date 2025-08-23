@@ -112,13 +112,13 @@ To make fair statistical comparisons across samples, we need to account for thes
 >[!NOTE]
 >There has been some debate in the field about what normalization methods to apply.
 >
-> McMurdie & Holmes 2014 claim that too much data is lost when you use rarefaction, and instead suggest using the Variance Stabilizing Transformation offered thorugh DESeq2. But many microbial environments are extremely variable in microbial composition, which would *violate* DESeq normalization assumptions of a constant abundance of a majority of species and of a balance of increased/decreased abundance for those species that do change. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
+> McMurdie & Holmes 2014 claim that too much data is lost when you use rarefaction, and instead suggest using the Variance Stabilizing Transformation offered through DESeq2. But many microbial environments are extremely variable in microbial composition, which would *violate* DESeq normalization assumptions of a constant abundance of a majority of species and of a balance of increased/decreased abundance for those species that do change. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
 >
->Indeed, Dr. Pat Schloss at the University of Michigan, who is a microbial ecologist who wrote one of the OG 16S amplicon softwares (Mothur) and is very knowledgeable in this field, wrote a rebuttal to that paper, providing evidence that *true* rarefaction/subsampling is still superior in dealing with uneven sequence depth. (paper 1: https://journals.asm.org/doi/10.1128/msphere.00355-23?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed, paper 2: https://journals.asm.org/doi/full/10.1128/msphere.00354-23) 
+>Indeed, Dr. Pat Schloss at the University of Michigan, a microbial ecologist who wrote one of the OG 16S amplicon softwares (Mothur) and is very knowledgeable in this field, wrote a rebuttal to that paper, providing evidence that *true* rarefaction/subsampling is still superior in dealing with uneven sequence depth. (paper 1: https://journals.asm.org/doi/10.1128/msphere.00355-23?url_ver=Z39.88-2003&rfr_id=ori:rid:crossref.org&rfr_dat=cr_pub%20%200pubmed, paper 2: https://journals.asm.org/doi/full/10.1128/msphere.00354-23) 
 >
 >He has also published a few Youtube videos on this and other stuff, I suggest checking it out if interested. https://www.youtube.com/watch?v=t5qXPIS-ECU&list=PLmNrK_nkqBpJuhS93PYC-Xr5oqur7IIWf&index=2&ab_channel=RiffomonasProject
 
-Before we use rarefaction (with multiple sampling), to normalize our data, we can take a look at a rarefaction curve to get a sense of how sequencing depth relates to observed diverity of ASVs.
+Before using rarefaction (with multiple sampling!) to normalize our data, let's look at a rarefaction curve to get a sense of how sequencing depth relates to observed diversity of ASVs.
 
 ```R
 # rarefraction curve 
@@ -126,23 +126,172 @@ rarecurve(t(count_tab), step=100, col=sample_info_tab$color, lwd=2, ylab="ASVs",
 abline(v=(min(rowSums(t(count_tab)))))
 
 ```
-Note the line we drew with `abline` shows us what would happen if we just subsampled all samples only once at the minimum values of sequences in a sample, i.e. 1897. We would certainly lose some diversity that way, to the point of McMurdie & Holmes. Let's test this theory out
+Note the line we drew with `abline` shows us what would happen if we just subsampled all samples only once at the minimum values of sequences in a sample, i.e. 1897. We would certainly lose some diversity that way, to the point of McMurdie & Holmes. Let's test this out we will do rarefaction with and without multiple sampling.
 
+```R
+# set normalization depth as the lowest number of sequences in a sample
+depth_target = min(sample_richness)
 
+# first, without multiple subsampling
+# rngseed = 123, fixes the starting point of the random number generator, ensuring that the subsampling of 1897 sequences will always return the same subset of sequences each time the code is run.
+asv_sub <- rarefy_even_depth(ASV_physeq, sample.size=depth_target, rngseed=123)
 
-
+# says we lost 440 ASVs. Let's confirm that another way.
+ntaxa(ASV_physeq) # original dataset before normalization
+ntaxa(asv_sub) 
 
 ```
-You can see the depth to which they have been rarefied by the red line. Ideally, the line intersects the sample curves when they are relatively horizontal.
+So, yes, 440 ASVs were lost. Let's see what happens when we average across multiple subsamplings.
+We will need to install the package first called `psadd`, which is an extension to phyloseq. 
 
-## 🧪 Step 3: Calculate diversity
-In ecology, the diversity of a community, or for us a sample, refers to various different measures. They can be classified as measures of either alpha diversity, which is calculated on a single sample, or beta diversity, which is calculated by comparing multiple samples.
+```R
+install.packages("remotes")
+remotes::install_github("cpauvert/psadd")
+library("psadd")
 
-### Beta diversity
-Beta diversity involves calculating metrics such as distances or dissimilarities based on pairwise comparisons of samples so we can relate samples to each other. 
-**Beta diversity**, also called "between sample diversity" is a measurement of the distance, or difference, between samples. First step will be to calculate the beta diversity, second to identify batch effects, and lastly to determine project effects
+# same target depth, but now we want it to repeat the subsampling 1000 times. We also set the seed to 123. 
+asv_rare <- multiple_rrarefy(ASV_physeq, sample.size=depth_target, 1000, 123)
 
-Typically the first thing to do is generate some exploratory visualizations like ordinations and hierarchical clusterings. These give you a quick overview of how your samples relate to each other and can be a way to check for problems like batch effects.
+# confirm it worked first
+Sequences_per_sample <- sample_sums(asv_rare)
+Sequences_per_sample
+
+# Let's check if we lost any taxa. 
+ntaxa(ASV_physeq)
+ntaxa(asv_rare)
+```
+
+We did not lose any taxa with this type or normalization, so I feel more confident about this approach. 
+
+Now we can continue our analysis. 
+
+## 🧪 Step 4: Plotting ASV abundance
+
+You've probably seen one of those barplot figures in a paper somewhere that shows how the relative abundance of taxa differs between samples.
+Let's make one first before we assess any stats. We will need to turn our ASV counts into relative abundances, i.e. dividing each ASV’s count in a sample by the total number of sequences in that sample so that the values represent proportions that sum to one.
+
+```R
+# Abundance Analysis ------------------------------------------------------
+
+asv_rel <- transform_sample_counts(asv_rare, function(x) x / sum(x))
+
+# check it worked. Should see that every sample sum is equal to 1
+colSums(otu_table(asv_rel )) %>% head()
+
+# prepare data for plotting
+
+# 1. Turn the phyloseq object into a numeric matrix for R to use
+asv_mat_rel <- as(otu_table(asv_rel), "matrix")
+
+# 2. Collapse ASVs to the phylum level
+asv_phylum <- tax_glom(asv_rel, "phylum", NArm=FALSE)
+
+# 3. “Melt” the phyloseq object into a long-format data frame for ggplot.
+df <- psmelt(asv_phylum)
+View(df)
+
+# 4. Make the plot
+library(ggplot2)
+
+ggplot(df, aes(x = Sample, y = Abundance, fill = phylum)) +
+  geom_bar(stat = "identity") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# default colors are awful, let's change that
+
+library(RColorBrewer)
+
+n <- length(unique(df$phylum))   # number of phyla in your data
+mycols <- colorRampPalette(brewer.pal(12, "Paired"))(n)
+
+ggplot(df, aes(x = Sample, y = Abundance, fill = phylum)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = mycols) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+# Now, for better visualization, it could be beneficial to collapse rare taxa (<1% abundant) into their own category, like so:
+threshold <- 0.01  # collapse anything <1% abundance
+df$phylum2 <- df$phylum
+df$phylum2[df$Abundance < threshold] <- "Other"
+
+n <- length(unique(df$phylum2))
+mycols <- colorRampPalette(brewer.pal(12, "Paired"))(n)
+
+ggplot(df, aes(x = Sample, y = Abundance, fill = phylum2)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values = mycols) +
+  theme_bw()
+
+```
+## 🧪 Step 5: Calculate alpha diversity
+
+A diversity index is a quantitative measure that is used to assess the level of diversity or variety within a particular system, such as a microbial community. 
+
+**Alpha diversity** describes the diversity within a single community/sample. It considers the number of different species in that sample (also referred to as species richness). Additionally, it can take the abundance of each species into account to measure how evenly taxa are distributed across the sample (also referred to as species evenness).
+
+One caveat to rarefaction is that the subsampling creates non-integer numbers (i.e., not whole numbers) and this is an issue for some diversity indices that require integers.
+So we need to round our numbers to their nearest whole number and then put that count table back into our phyloseq object, like so:
+
+```R
+# Round counts ---------------------------------------------------------
+
+asv_mat <- as(otu_table(asv_rare), "matrix")
+asv_mat_round <- round(asv_mat, 0)
+asv_tab_round <- otu_table(asv_mat_round, taxa_are_rows = taxa_are_rows(asv_rare))
+
+# Rebuild phyloseq object with new count table
+ASV_physeq_round <- phyloseq(
+  asv_tab_round,
+  tax_table(tax_tab_phy),
+  sample_data(sample_info_tab_phy)
+)
+
+# Let's see how that changed our sequence counts
+Sequences_per_sample <- sample_sums(asv_tab_round)
+Sequences_per_sample
+```
+
+What happens, unfortunately, is that we lose some rare taxa in each sample (those with counts <1). To be honest, I am not sure what a better workaround is here...
+I tried to push ASVs with counts between 0-1 to 1 and round the other numbers as is, but this greatly inflated those rare taxa. I feel more confident that having to lose them like so is better than that. All we can do is clearly state what we did to be transparent. 
+
+Let's move on to alpha diversity.
+
+* Chao1 = Measures total _richness_, so observed + rare taxa inferred from singletons/doubletons. The higher the value, the greater the number of ASVs. 
+* Shannon's = Measures _diversity_ as both richness and evenness (relative proportions of our ASVs). The value increases as you add more taxa, even if they are rare.
+* Simpson's = also measures both richness and evenness, but weights more on dominant taxa and is less sensitive to rare ones. 1 = very even; close to 0 = one or a few taxa dominate.
+
+<img width="710" height="578" alt="image" src="https://github.com/user-attachments/assets/5163ba93-5cdf-4c15-bc46-08e1e203ecfb" />
+
+>[NOTE!]
+> These are just metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of anything or be compared across studies.
+
+```R
+# Alpha diversity ---------------------------------------------------------
+
+plot_richness(ASV_physeq, color="char", measures=c("Chao1", "Shannon", "Simpson")) + 
+  scale_color_manual(values=unique(sample_info_tab$color[order(sample_info_tab$char)])) + theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+```
+What can we say?
+
+It would be nice to also have our calculated indices as a file to have. We will use the `microbiome` R package for that.
+
+```R
+BiocManager::install("microbiome")
+library(microbiome)
+alpha_table <- microbiome::alpha(ASV_physeq_round, index = "all")
+write.table(alpha_table, "ASVs_alpha_metrics.tsv",
+            sep="\t", quote=F, col.names=NA)
+
+```
+
+## 🧪 Step 6: Calculate beta diversity
+
+**Beta diversity**, also called "between-sample diversity", is a measurement of the distance, or difference, between samples. It involves calculating metrics such as distances or dissimilarities based on pairwise comparisons of samples so we can relate samples to each other. 
+
+Typically, you would generate some exploratory visualizations like ordinations and hierarchical clusterings for an overview of how your samples relate to each other. 
 
 **Hierarchical clustering**
 We’re going to use Euclidean distances {explain euclidiean distances) to generate some exploratory visualizations of our samples. Since differences in sampling depths between samples can influence distance/dissimilarity metrics, we first need to somehow normalize across our samples.
