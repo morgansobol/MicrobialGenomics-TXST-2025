@@ -417,11 +417,11 @@ write.table(asv_tax_no_contam, "ASVs_taxonomy-no-contam.tsv",
 
 Now that concludes the end of the processing steps for 16S amplicon data in Dada2. Next exercise we will analyze our data and explore differences between samples statistically! 
 
-## 📝 Assignment due before next class on Canvas
+## 📝 Assignment due before next lab on Canvas
 
 Using the ASV_counts, ASV_taxonomy tables, and ASV.fa files, answer the following questions: 
 
-1. Pick one ASV, not identified at the domain level, and blast its sequence on NCBI. What were the top 5 hits?
-2. What are the 3 most abundant taxa in the sample you chose?
-3. Pick one of the three and tell me something about them (metabolism, lifestyle, other environments they are found, etc.). Provide references.
+1. What are the 3 most abundant taxa in the sample you chose?
+2. Pick one of the three and tell me something about them (metabolism, lifestyle, other environments they are found, etc.). Provide references.
+3. Blast the ASV you chose on NCBI. What were the top hits? Did they match?
 
