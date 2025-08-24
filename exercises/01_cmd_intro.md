@@ -276,12 +276,12 @@ What this is saying is that no matter what comes before, if it ends with “.txt
 
 ## 🧪 Exercise 4: Terminus game
 
-Practice navigating the command line by making your way through the world of Terminus. The locations you can go are directories, so you cd to move from area to area, and ls to look around and see what is in the area. Items in each area are files, so you use `less` to open them (interact with them), or `cp` to make copies of an "item," touch to create an item you need, `rm` to remove an obstacles, etc. If you need help with a command type `man` and the command you want help with. 
+Practice navigating the command line by making your way through the world of Terminus. The locations you can go to are directories, which you `cd` to move back and forth, and `ls` to look around and see what is in the area. Items in each area are files, so you use `less` to open them (interact with them), or `cp` to make copies of an "item," `touch` to create an item you need, `rm` to remove an obstacle, etc. If you need help with a command, type `man` and the command you want help with. 
 
 Follow this link to access Terminus: https://web.mit.edu/mprat/Public/web/Terminus/Web/main.html 
 When it loads, follow the instructions. Have fun!
 
-## Assignment
+## Assignment Due before
 Turn in the answers to these questions on Canvas before next Thursdays class (so by 7:59 am 09/04). 
 Send me three screenshots:
 1. When you had to use the command `mv`. 
