@@ -281,8 +281,9 @@ Practice navigating the command line by making your way through the world of Ter
 Follow this link to access Terminus: https://web.mit.edu/mprat/Public/web/Terminus/Web/main.html 
 When it loads, follow the instructions. Have fun!
 
-## Assignment Due before
-Turn in the answers to these questions on Canvas before next Thursdays class (so by 7:59 am 09/04). 
+📝 ## Assignment Due before
+Turn in the answers to the questions below on Canvas before next Thursday's class (1:59 pm 09/04). 
+
 Send me three screenshots:
 1. When you had to use the command `mv`. 
 2. When you had to use the command `rm`. 
