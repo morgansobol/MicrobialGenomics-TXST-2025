@@ -273,8 +273,10 @@ To get a "sneak-peak" at what we added in the sample1.txt file, we can either us
 head sample1.txt
 ```
 There are a few other options to view files.
-For example, the command `less` lets you scroll through a file but not edit it. The command `cat` will display the whole file at once, so it is better to use for shorter files.
-Try both our on sample1.txt file.
+For example, the command `less` lets you scroll through a file but not edit it. Try it out on `sample1.txt`. (To exit the `less` command, just press `q`. 
+
+The command `cat` will display the whole file at once, so it is better to use for shorter files.
+Try it out too `sample1.txt` file.
 
 If we wanted to count the number of lines, words, or characters a file has, we can use the `wc` or (<ins>w</ins>ord <ins>c</ins>ount) command. 
 ```bash
