@@ -205,6 +205,8 @@ Lets get rid of the renamed file. To <ins>r</ins>e<ins>m</ins>ove files, use the
 rm renamed_copy_sample2.txt
 ls
 ```
+> [!TIP]
+> When starting out, especially, it might be a better practice to use the -i flag with `rm`. This will prompt the terminal to first ask permission before you delete something.
 
 You can also remove entire directories. Let's remove the copies/ directory using -r. 
 ```bash
@@ -212,6 +214,21 @@ cd ..
 rm -r copies/
 ls
 ```
+Commands used and other flags
+| Command                     | Description                                         |
+| --------------------------- | --------------------------------------------------- |
+| mkdir [dirname]             | Make directory                                      |
+| touch [filename]            | Create file                                         |
+| rm [filename]               | Remove file                                         |
+| rm -i [filename]            | Remove directory, but ask before                    |
+| rm -r [dirname]             | Remove directory                                    |
+| rm -rf [dirname]            | Remove directory with contents                      |
+| rm ./\*                     | Remove everything in the current folder             |
+| cp [filename] [dirname]     | Copy file                                           |
+| mv [filename] [dirname]     | Move file                                           |
+| mv [dirname] [dirname]      | Move directory                                      |
+| mv [filename] [filename]    | Rename file or folder                               |
+| mv [filename] [filename] -v | Rename Verbose - print source/destination directory |
 
 ## 🧪 Exercise 3: Editing/creating file contents
 
