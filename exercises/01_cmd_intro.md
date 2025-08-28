@@ -84,6 +84,22 @@ I prefer to add -lh, the "h" prints the sizes in a <ins>h</ins>uman-readable for
 ls -lh
 ```
 
+> [!TIP]
+> On Linux and Mac, the `man` command is used to show the **manual** of any command that you can run in the terminal. So if you wanted to know more about the `ls` command, you could run:
+
+```bash
+  man ls
+```
+
+If the `man` command is not included, you can just type the command that you want to know more about and then `--help` and you will get similar info:
+
+```bash
+  ls --help
+```
+
+You should be able to use the arrow keys or page up and down. When you are ready to exit, just press `q`.
+
+
 Ok, lets move into our Github downloaded directory, or <ins>c</ins>hange <ins>d</ins>irectories using the `cd` command. Move to the MicrobialGenomics-TXST-2025 directory and use `pwd` and `ls` to see where you are and what is there. **Type each line one at a time and press enter**
 
 ```bash
