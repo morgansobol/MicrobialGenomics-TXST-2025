@@ -17,7 +17,7 @@ By the end of this exercise, you should be able to:
 
 Let's establish some basics first. 
 
-Linux and Mac users will find a Terminal program already installed on their computers. Let's stick with the computers in the class for now. Later we can get you set up on your personal computer if you own a Window/PC because you will need to install a Terminal emulator. 
+Linux and Mac users will find a Terminal program already installed on their computers. If you are using windows, I recommend downloading MobaXTerm (https://mobaxterm.mobatek.net/), but other software is available. We can also get you set up on your personal computer later if you own a Window/PC. 
 
 Now, the _Terminal_ is a text input and output environment where we can type commands and see the output. In other words, it is the "window" in which you enter the actual commands and those commands are interpreted and run by a _Shell_. 
 
