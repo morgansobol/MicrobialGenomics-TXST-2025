@@ -11,8 +11,7 @@ By the end of this exercise, you should be able to:
 - Navigate the file system using `cd`, `ls`, and `pwd`
 - Create, move, copy, and delete files and directories
 - Use wildcards and pipes
-- Read and manipulate files using `head`, `tail`, `less`, `grep`, `cut`, and `sort`
-- Understand and run a basic bash script
+- Read and manipulate files using `head`, `tail`, `less`, `nano`, and `cat`. 
 
 ---
 
