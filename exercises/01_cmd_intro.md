@@ -18,7 +18,7 @@ By the end of this exercise, you should be able to:
 Before we begin exploring the command, let's download the exercise files from the GitHub like so:
 
 ```bash
-git clone link
+git clone https://github.com/morgansobol/MicrobialGenomics-TXST-2025.git
 ```
 So you just ran your first command `git clone` which specifically allows us to copy files and data from a GitHub page to here. 
 
@@ -47,7 +47,7 @@ Let's check where you are by <ins>p</ins>rinting your <ins>w</ins>orking <ins>d<
 ```bash
 pwd
 ```
-It should look something like this `/home/[netID]` and tell you that you are in the "home" location. 
+It should look something like this `/home/[name]` and tell you that you are in the "home" location. 
 
 Now <ins>l</ins>i<ins>s</ins>t the contents of your current directory using the `ls` command.
 ```bash
@@ -88,7 +88,7 @@ cd ..
 pwd
 ls
 ```
-The pwd command should again give you `/home/[netID]` and ls should give you `.  ..  .bash_history  .bash_logout  .bash_profile  .bashrc  .emacs  example.txt  .kshrc  MicrobialGenomics-TXST-2025  .mozilla  .ssh`. 
+The pwd command should again give you `/home/[name]` and ls should give you `.  ..  .bash_history  .bash_logout  .bash_profile  .bashrc  .emacs  example.txt  .kshrc  MicrobialGenomics-TXST-2025  .mozilla  .ssh`. 
 
 You can also use `cd` to "jump" to other directories quickly, like below:
 ```bash
@@ -96,7 +96,7 @@ cd MicrobialGenomics-TXST-2025/data/01_intro/
 pwd
 ```
 
-If you type `cd` alone, as is, it will bring you all the way back to home, everytime. 
+If you type `cd` alone, it will bring you all the way back to home. 
 ```bash
 cd
 pwd
@@ -113,7 +113,7 @@ When combined with "..", you can move back multiple directories as well.
 cd ../../
 pwd
 ```
-Where are you now? (Hint: should be `/home/[netID]/MicrobialGenomics-TXST-2025`)
+Where are you now? (Hint: should be `/home/[name]/MicrobialGenomics-TXST-2025`)
 
 > [!TIP]
 > If we are trying to specify a file or path we can begin typing its name and then press the <ins>tab</ins> key to complete it (try it out below). If there is only one possible way to finish what we’ve started typing, it will complete it entirely for us. If there is more than one possible way to finish what we’ve started typing, it will complete as far as it can, and then hitting tab twice quickly will show all the possible options. If tab-complete does not do either of those things, then we are either confused about where we are or what is where, or we've maybe spelled the name wrong.
