@@ -23,6 +23,8 @@ Now, the _Terminal_ is a text input and output environment where we can type com
 
 So the _Shell_ is the program inside the terminal that actually processes commands and returns the output. In most Linux and Mac operating systems, it uses a _Bash_ shell, which is essentially its own programming language and what we will use below. 
 
+Different shells provide unique features and syntax: on macOS, the default is Zsh (formerly Bash) with Unix-style commands, while Windows primarily uses PowerShell and Command Prompt, with options to install Unix-like shells such as WSL or Git Bash.
+
 In summary, think of it this way: Terminal is the TV and Shell is the program running the TV. 
 
 
