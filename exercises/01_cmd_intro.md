@@ -15,14 +15,6 @@ By the end of this exercise, you should be able to:
 - Understand and run a basic bash script
 
 ---
-Before we begin exploring the command, let's download the exercise files from the GitHub like so:
-
-```bash
-git clone https://github.com/morgansobol/MicrobialGenomics-TXST-2025.git
-```
-So you just ran your first command `git clone` which specifically allows us to copy files and data from a GitHub page to here. 
-
-## 🧪 Exercise 1: Navigating the Filesystem
 
 Let's establish some basics first. 
 
@@ -41,7 +33,27 @@ Additionally, there are two special locations in all Unix-based systems, so two 
 
 <img width="1511" height="1799" alt="image" src="https://github.com/user-attachments/assets/d051f1d5-91ee-44b7-b175-9471422c174b" />
 
+## 🧪 Exercise 1: Navigating the Filesystem
 
+Before we begin exploring the command, let's download the exercise files from the GitHub like so:
+
+```bash
+git clone https://github.com/morgansobol/MicrobialGenomics-TXST-2025.git
+```
+So you just ran your first command `git clone` which specifically allows us to copy files and data from a GitHub page to here. 
+
+Before we look at some other common commands, I just want to note a few keyboard commands that are very helpful:
+
+- `Up Arrow`: Will show your last command
+- `Down Arrow`: Will show your next command
+- `Tab`: Will auto-complete your command
+- `Ctrl + L`: Will clear the screen
+- `Ctrl + C`: Will cancel a command
+- `Ctrl + R`: Will search for a command
+- `Ctrl + D`: Will exit the terminal
+- `history`: Will show a history of commands used in that session
+
+Ok, let's explore the other basics.
 
 Let's check where you are by <ins>p</ins>rinting your <ins>w</ins>orking <ins>d</ins>irectory (i.e. where you currently are in the system).
 ```bash
@@ -125,6 +137,20 @@ pwd
 ```
 
 Ok, that was a brief intro to moving around the command line. Practice makes perfect, so practice this when you can, and it will eventually become natural. 
+
+Summary of commands used:
+| Command                             | Description                                                                       |
+| ----------------------------------- | --------------------------------------------------------------------------------- |
+| pwd                                 | Lists the path to the working directory                                           |
+| ls                                  | List directory contents                                                           |
+| ls -a                               | List contents including hidden files (Files that begin with a dot)                |
+| ls -l                               | List contents with more info including permissions (long listing)                 |
+| ls -lh                              | List content sizes in readable format                                             |
+| cd                                  | Change directory to home                                                          |
+| cd [dirname]                        | Change directory to specific directory                                            |
+| cd ~                                | Change to home directory                                                          |
+| cd ..                               | Change to parent directory                                                        |
+
 
 ## 🧪 Exercise 2: Creating, copying, moving, and removing files + directories
 > [!WARNING]
