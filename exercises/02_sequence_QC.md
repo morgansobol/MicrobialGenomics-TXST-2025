@@ -33,8 +33,32 @@ We will *not* go over Demultiplexing. Demultiplexing refers to the step in proce
 ---
 
 ## 🧪 Exercise 1: FastQC, checking your read quality
-First we need to set up the directory we are going to work in. I personally prefer to have a directory for each software we use. So let's make one for fastQC.
+First we need to set up the directory we are going to work in. Head into the MicrobialGenomics-TXST-2025/data/02_sequenceQC/ directory in your MicrobialGenomics-TXST-2025 from last week.
 ```bash
+ cd MicrobialGenomics-TXST-2025/data/02_sequenceQC/
+```
+
+Now let's download the data we will work with
+```bash
+wget https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/02_sequenceQC/data_dir.tar.gz
+```
+If `wget` does not work, try curl instead:
+```bash
+curl -L -O https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/02_sequenceQC/data_dir.tar.gz
+```
+
+Now this is a compressed file, also called a "tar ball". To unpack it, like opening a zip file, we run:
+```bash
+tar -xzvf data_dir.tar.gz
+```
+
+This should have unpacked a new directory called data_dir.
+
+Let's set up the rest of our environment to process the data.
+
+I personally prefer to have a directory for each software we use. So let's make one for fastQC.
+```bash
+mkdir working_dir/
 cd working_dir/
 mkdir fastqc
 cd fastqc
@@ -49,7 +73,7 @@ conda activate seqQC
 
 Now to run the program we do the following, calling the sequence reads from the rawseq/16s directory like so but having the output placed in our current working directory:
 ```bash
-fastqc ../../data_dir/rawseqs/16s/*.fq -o .
+fastqc ../../data_dir/*.fq -o .
 ```
 
 The output is an .html file that you can view. You can look at them individually like so:
