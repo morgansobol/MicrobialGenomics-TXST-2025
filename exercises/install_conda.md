@@ -19,6 +19,10 @@ source ~/.zshrc
 
 zaj33 >> to (base) zaj33 --> signifies the base conda environment
 
+If you get an error about accepting terms of service, type the following commands. 
+```bash
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+```
+```bash
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r 
-
+```
