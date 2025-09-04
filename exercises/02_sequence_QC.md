@@ -75,15 +75,24 @@ Now to run the program we do the following, calling the sequence reads from the 
 fastqc ../../data_dir/*.fq -o .
 ```
 
-The output is an .html file that you can view. You can look at them individually like so:
+The output is an .html file that you can view. You can look at them individually like so if mac user:
 ```bash
 open B1_sub_R1_fastqc.html
 ```
+Or like so if on mobaXterm
+```bash
+explorer.exe B1_sub_R1_fastqc.html
+```
+
 
 However, instead of checking each file individually, we can instead use the tool `multiqc` which will aggregate all of our results together.
 ```bash
 multiqc .
 open multiqc_report.html
+```
+Or like so if on mobaXterm
+```bash
+explorer.exe multiqc_report.html
 ```
 
 Now we need to trim the primers off the reads and low-quality bases, both from read 1 and read 2, to improve their quality.
