@@ -1,3 +1,5 @@
+What is conda? https://www.lewisdoesdata.com/2022/06/08/conda-for-data-analysis-part-2.html 
+
 ## For Mac users
 ```bash
 curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
