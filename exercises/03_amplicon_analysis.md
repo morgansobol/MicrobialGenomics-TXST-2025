@@ -334,7 +334,7 @@ tax_info <- IdTaxa(test=dna, trainingSet=trainingSet, strand="both", processors=
 
 ```
 
-If we did not have time, then download the classification/taxonomy table that I ran ahead of time for you using the Terminal in R. 
+If we did not have time, then download the classification/taxonomy table that I ran ahead of time for you using the Terminal in R. Go to Tools > Terminal > New Terminal. It will open next to your R console.
 
 ```bash
 wget https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax-info.RData
@@ -412,7 +412,7 @@ asv_tax[row.names(asv_tax) %in% contam_asvs, ]
 Since there were only six here, I wanted to peek at them. And not surprisingly, they are all things that are commonly contaminants, but of course not exclusively (e.g. Burkholderia, Pseudomonas). We can see this by looking at their taxonomic designations in our tax table. 
 
 Let's also extract the contam sequences from the fasta files and blast against NCBI (a different database than GTDB) so we can possibly get an idea of what the NAs are. 
-To do this, we can use the Terminal in R. Go to Tools > Terminal > New Terminal. It will open next to your R console.
+To do this, we can use the Terminal in R. 
 ```bash
 grep -w -A1 "^>ASV_104\|^>ASV_219\|^>ASV_230\|^>ASV_274\|^>ASV_285\|^>ASV_623" ASVs.fa
 ```
