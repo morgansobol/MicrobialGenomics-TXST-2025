@@ -133,7 +133,7 @@ library(viridis) ; packageVersion("viridis") # 0.6.5
 
 getwd() # where you are currently
 
-# On Mac, you can navigate to the folder where your trimmed read files are, select the 3 dots as the top, select Get Info, copy the info following "Where", then past below. 
+# Let's paste our path from the last exercise. 
 
 setwd("[insert path to directory you want to be in]")
 
