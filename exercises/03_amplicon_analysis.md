@@ -65,7 +65,7 @@ write.table(object, "filename.tsv", sep="\t")
 ```
 
 Write a new variable for R to use. A variable is a name that stores a value or some data.  
-```R
+```bash
 new_df = filename_df
 new_df <- filename_df
 filename_df -> new_df
