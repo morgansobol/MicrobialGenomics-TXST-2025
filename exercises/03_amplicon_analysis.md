@@ -77,7 +77,11 @@ This work was published, so I encourage you to check it out: https://www.frontie
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
-BiocManager::install("dada2", version = "3.20")
+BiocManager::install("dada2", version = "3.18")
+
+# During installation, it will ask:
+# Do you want to install from sources the package which needs compilation? (yes/no/cancel) type yes, press enter
+# Update all/some/none? Type "a" press enter
 
 #restart R (not sure why we have to do this, but oh well)
 .rs.restartR()
@@ -87,6 +91,12 @@ install.packages(c("httpuv","later","promises"))
 install.packages("tidyverse")
 install.packages("dendextend")
 install.packages("viridis")
+
+# Again, it will ask, Update all/some/none? Type "a" press enter
+
+# Now run each line separately:
+# If it asks, # Do you want to install from sources the package which needs compilation? (yes/no/cancel) type yes, press enter
+# Or, Update all/some/none?, Type "a", press enter
 
 BiocManager::install("decontam")
 BiocManager::install("DECIPHER")
