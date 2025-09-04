@@ -44,6 +44,10 @@ wsl --install
 ```
 Open MobaXTerm, got to Settings, and select the Terminal tab. 
 In the Local shell settings box, from the Dropdown select WSL default.
+
+<img width="1154" height="950" alt="image" src="https://github.com/user-attachments/assets/102f5633-c7d8-4615-aa9f-b1894a0cf310" />
+
+
 Now your MobaXTerm terminal will always start with WSL. 
 
 Now install Miniconda. 
