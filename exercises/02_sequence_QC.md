@@ -112,7 +112,8 @@ cd cutadapt/
 
 Now copy over the data files we are working with to our current directory:
 ```bash
-cp ../rawreads/*.fq .
+cp ../../data_dir/*.fq .
+ls
 ```
 
 Now we will run cutadapt on paired-end mode, because, remember from lecture, most cases reads are sequenced in the forward and reverse direction, meaning each forward read should have a paired read. We will try with one sample first before running as a loop to process all samples at once. 
@@ -122,7 +123,7 @@ cutadapt -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
          -A ^GGACTACHVGGGTWTCTAAT...TTACCGCGGCKGCTGGCAC \
          -m 215 -M 285 --discard-untrimmed \
          -o B1_sub_R1_trimmed.fq -p B1_sub_R2_trimmed.fq \
-         ../../data_dir/rawseqs/16s/B1_sub_R1.fq ../../data_dir/rawseqs/16s/B1_sub_R2.fq 
+         ../../data_dir/B1_sub_R1.fq ../../data_dir/B1_sub_R2.fq 
 ```
 
 We are specifying the primers for the forward read with the -a flag, giving it the forward primer (in normal orientation), followed by three dots (required by cutadapt to know they are “linked”, with bases in between them, rather than right next to each other), then the reverse complement of the reverse primer. 
@@ -135,7 +136,7 @@ Then for the reverse reads, specified with the -A flag, we give it the reverse p
 Ok, let's take a quick look to see that the primers were trimmed off. 
 ```bash
 ### R1 BEFORE TRIMMING PRIMERS
-head -n 2 ../../data_dir/rawseqs/16s/B1_sub_R1.fq
+head -n 2 ../../data_dir/B1_sub_R1.fq
 # @M02542:42:000000000-ABVHU:1:1101:8823:2303 1:N:0:3
 # GTGCCAGCAGCCGCGGTAATACGTAGGGTGCGAGCGTTAATCGGAATTACTGGGCGTAAAGCGTGCGCAGGCGGTCTTGT
 # AAGACAGAGGTGAAATCCCTGGGCTCAACCTAGGAATGGCCTTTGTGACTGCAAGGCTGGAGTGCGGCAGAGGGGGATGG
@@ -152,7 +153,7 @@ head -n 2 B1_sub_R1_trimmed.fq
 
 
 ### R2 BEFORE TRIMMING PRIMERS
-head -n 2 ../../data_dir/rawseqs/16s/B1_sub_R2.fq
+head -n 2 ../../data_dir/B1_sub_R2.fq
 # @M02542:42:000000000-ABVHU:1:1101:8823:2303 2:N:0:3
 # GGACTACCCGGGTATCTAATCCTGTTTGCTCCCCACGCTTTCGTGCATGAGCGTCAGTGCAGGCCCAGGGGACTGCCTTC
 # GCCATCGGTGTTCCTCCGCATATCTACGCATTTCACTGCTACACGCGGAATTCCATCCCCCTCTGCCGCACTCCAGCCTT
@@ -184,7 +185,7 @@ Add this to the bash file you just created.
 ```bash
 #!/usr/bin/env bash
 
-DIR="../../data_dir/rawseqs/16s"
+DIR="../../data_dir/"
 
 for R1 in ${DIR}/*_R1.fq; do
     # derive sample name by stripping path and suffix
@@ -254,3 +255,8 @@ ls
 I am introducing a new command here `ln`. This command creates a symbolic (hence -s) link, also known as a symlink or soft link. This is a special type of file that points to another file or directory. Symbolic links are commonly used to create shortcuts or aliases for files or directories located in the file system. This allows us to use those files in this directory, without having to make a duplicate, hard copy. 
 
 Ok, now we can switch to R and process these reads (: 
+
+```bash
+pwd
+```
+We will need this path for R. 
