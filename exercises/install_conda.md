@@ -16,16 +16,22 @@ Close out of terminal window and reopen, or run below to restart:
 ```bash
 source ~/.zshrc
 ```
-
 zaj33 >> to (base) zaj33 --> signifies the base conda environment
 
-If you get an error about accepting terms of service, type the following commands. 
+Now you need to accept further terms of service, type the following commands and press Enter. 
 ```bash
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
 ```
 ```bash
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r 
 ```
+
+Check Conda is working, enter
+```bash
+conda --version
+```
+Should say `conda 25.7.0`. 
+
 ## For Windows using MobaXTerm
 
 Search for Windows Features and open
@@ -59,6 +65,18 @@ Close out of terminal window and reopen. Conda should now be installed.
 
 zaj33 >> to **(base)** [name] --> signifies the base conda environment
 
+Now you need to accept further terms of service, type the following commands and press Enter. 
+```bash
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+```
+```bash
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r 
+```
+Check Conda is working, enter
+```bash
+conda --version
+```
+Should say `conda 25.7.0`. 
 
 
 
