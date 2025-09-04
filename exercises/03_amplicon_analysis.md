@@ -9,6 +9,8 @@ This week, you will finally start analyzing data. Specifically, we will be perfo
 
 
 We will be following DADA2's tutorial + Mike Lee's tutorial on DADA2, using Mike's data (with some modifications) below. Thanks Mike!
+https://benjjneb.github.io/dada2/tutorial.html
+https://astrobiomike.github.io/amplicon/dada2_workflow_ex
 
 ---
 ## 🧠 Learning Objectives
