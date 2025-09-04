@@ -222,8 +222,10 @@ But, it can be lighter on memory requirements to run them as separate steps like
 ```R
 # Dereplication -----------------------------------------------------------
 
-dada_forward <- dada(derep_forward, err=err_forward_reads, pool="pseudo", multithread=TRUE)
-dada_reverse <- dada(derep_reverse, err=err_reverse_reads, pool="pseudo", multithread=TRUE)
+derep_forward <- derepFastq(filtered_forward_reads, verbose=TRUE)
+names(derep_forward) <- samples # the sample names in these objects are initially the file names of the samples, this sets them to the sample names for the rest of the workflow
+derep_reverse <- derepFastq(filtered_reverse_reads, verbose=TRUE)
+names(derep_reverse) <- samples
 ```
 
 ## 🧪 Step 5: Inferring ASVs
