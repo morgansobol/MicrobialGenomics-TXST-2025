@@ -352,16 +352,16 @@ tax_info <- IdTaxa(test=dna, trainingSet=trainingSet, strand="both", processors=
 If we did not have time, then download the classification/taxonomy table that I ran ahead of time for you using the Terminal in R. Go to Tools > Terminal > New Terminal. It will open next to your R console.
 
 ```bash
-wget https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax-info.RData
+wget https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax_info.RData
 ```
 If `wget` does not work, try curl instead:
 ```bash
-curl -L -O https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax-info.RData
+curl -L -O https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax_info.RData
 ```
 
 To load the object into R, do this:
 ```R
-load("tax-info.RData") 
+load("tax_info.RData") 
 ```
 
 Ok, let's convert the output object of class "Taxa" to a taxonomic matrix analogous to the output if we had used the `assignTaxonomy` function instead. We will also generate a fasta file of our final ASV sequences and the count table. 
