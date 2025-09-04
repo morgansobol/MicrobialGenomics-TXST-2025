@@ -22,7 +22,7 @@ By the end of this exercise, you should be able to:
 - Classify ASVs taxonomically and recognize limitations of reference databases. 
 - Learn the importance of sampling blanks and decontamination
 
-## Quick refresher on commonly used R scripts 
+## Commonly used R scripts 
 
 Where am I?
 ```R
@@ -63,6 +63,14 @@ Write a table/data matrix as a tab-delimited file
 ```R
 write.table(object, "filename.tsv", sep="\t")
 ```
+
+Write a new variable for R to use. A variable is a name that stores a value or some data.  
+```R
+new_df = filename_df
+new_df <- filename_df
+filename_df -> new_df
+```
+All three mean the same thing: you are creating a new variable called `new_df` that stores whatever is in `filename_df` (for example, a dataframe).
 
 Ok, let's begin!
 
