@@ -67,6 +67,9 @@ cd fastqc
 Before we run FastQC, we need to install the programs and activate the Conda environment that contains the program.
 ```bash
 conda create -y -n seqQC -c conda-forge -c bioconda -c defaults cutadapt fastqc trimmomatic multiqc
+```
+Now activate your environment.
+```bash
 conda activate seqQC
 ```
 
