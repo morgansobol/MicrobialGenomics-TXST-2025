@@ -30,6 +30,16 @@ It's important to know that this isn’t a perfect system, as there are still co
 
 We will *not* go over Demultiplexing. Demultiplexing refers to the step in processing where you’d use the barcode information in order to know which sequences came from which samples after they had all been sequenced together. Barcodes are the unique sequences that were attached to each of your invidivual samples’ genetic material before the samples got all mixed together. Demultiplexing is something that most sequence facilities will do for you nowadays. Just know that this process happens before fastq read QC. 
 
+Now, let's learn a bit of where the sequences we have been working on come from:
+
+Mike and his team were exploring an underwater mountain ~3 km down at the bottom of the Pacific Ocean that serves as a low-temperature (~5-10°C) hydrothermal venting site. This amplicon dataset was generated from DNA extracted from crushed basalts collected from across the mountain with the goal to begin to characterize the microbial communities of these deep-sea rocks. No one had ever been here before, so as is often the purpose of marker-gene sequencing, this was just a broad-level community survey. The sequencing was done on the Illumina MiSeq platform with 2x300 paired-end sequencing using primers targeting the V4 region (~291 bp) of the 16S rRNA gene. There are 20 samples total: 4 extraction “blanks” (nothing added to DNA extraction kit), 2 bottom-water samples, 13 rocks, and one biofilm scraped off a rock. 
+
+In the following figure, overlain on the map are the rock sample collection locations, and the panes on the right show examples of the 3 distinct types of rocks collected: 1) basalts with highly altered, thick outer rinds (>1 cm); 2) basalts that were smooth, glassy, thin exteriors (~1-2 mm); and 3) one calcified carbonate.
+
+<img width="800" height="436" alt="image" src="https://github.com/user-attachments/assets/aa197211-0392-4b63-998a-6e32de69efb5" />
+
+This work was published, so I encourage you to check it out: https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2015.01470/full 
+
 ---
 
 ## 🧪 Exercise 1: FastQC, checking your read quality
@@ -128,7 +138,13 @@ cutadapt -a ^GTGCCAGCMGCCGCGGTAA...ATTAGAWACCCBDGTAGTCC \
 
 We are specifying the primers for the forward read with the -a flag, giving it the forward primer (in normal orientation), followed by three dots (required by cutadapt to know they are “linked”, with bases in between them, rather than right next to each other), then the reverse complement of the reverse primer. 
 
-Then for the reverse reads, specified with the -A flag, we give it the reverse primer (in normal 5’-3’ orientation), three dots, and then the reverse complement of the forward primer. Both of those have a ^ symbol in front at the 5’ end indicating they should be found at the start of the reads (which is the case with this particular setup). The minimum read length (set with -m) and max (set with -M) were based roughly on 10% smaller and bigger than would be expected after trimming the primers. --discard-untrimmed states to throw away reads that don’t have these primers in them in the expected locations. Then -o specifies the output of the forwards reads, -p specifies the output of the reverse reads, and the input forward and reverse are provided as positional arguments in that order.
+Then for the reverse reads, specified with the -A flag, we give it the reverse primer (in normal 5’-3’ orientation), three dots, and then the reverse complement of the forward primer. Both of those have a ^ symbol in front at the 5’ end, indicating they should be found at the start of the reads (which is the case with this particular setup). 
+
+The minimum read length (set with -m) and max (set with -M) were based roughly on 10% smaller and bigger than would be expected after trimming the primers. 
+
+--discard-untrimmed states to throw away reads that don’t have these primers in them in the expected locations. 
+
+Then -o specifies the output of the forward reads, -p specifies the output of the reverse reads, and the input forward and reverse are provided as positional arguments in that order.
 
 >[!NOTE]
 > These types of settings will be different for data generated with different sequencing, i.e. not 2x300, and different primers sets. 
