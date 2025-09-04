@@ -5,7 +5,7 @@ curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
 ```bash
 bash Miniconda3-latest-MacOSX-arm64.sh
 ```
-Type yes, press Enter.
+Press enter to scroll through the ToS. Then type yes when prompted, press Enter.
 
 Press Enter again to confirm location.
 
@@ -26,3 +26,20 @@ conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/ma
 ```bash
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r 
 ```
+## For Windows using MobaXTerm
+
+Search for Windows Powershell and open it
+
+Install Windows Subsystem for Linux (wsl)
+```shell
+wsl --install
+```
+
+Now search for Windows Features and open
+Check Windows Subsystem for Linux like below. NOTE: you will need to reboot your computer!
+<img width="750" height="665" alt="image" src="https://github.com/user-attachments/assets/d9702436-b41b-47db-9afd-65d87637b199" />
+
+
+
+
+
