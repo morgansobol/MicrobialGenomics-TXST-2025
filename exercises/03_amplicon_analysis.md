@@ -1,7 +1,12 @@
 # Week 2: 16S Amplicon analysis - Part 1
 
 Welcome to Week 2! 
-This week, you will finally start analyzing data. Specifically, we will be performing 16S amplicon analysis. From here on out, unless noted, we are working in R, not at the Unix-like command line. If you find you need a refresher in R basics, check out this page: https://astrobiomike.github.io/R/.
+This week, you will finally start analyzing data. Specifically, we will be performing 16S amplicon analysis. From here on out, unless noted, we are working in R, not at the Unix-like command line. If you find you need a refresher in R basics, check out these pages: 
+ * https://astrobiomike.github.io/R/.
+ * http://r-tutorial.nl/
+ * https://rstudio-education.github.io/hopr/
+ * Google is your friend too...
+
 
 We will be following DADA2's tutorial + Mike Lee's tutorial on DADA2, using Mike's data (with some modifications) below. Thanks Mike!
 
