@@ -315,7 +315,7 @@ write.table(summary_tab, "read-count-tracking.tsv", quote=FALSE, sep="\t", col.n
 ```
 ## 🧪 Step 9: Assign taxonomy (finally the cool stuff!)
 We are going to be using the alternative classification method with the DECIPHER package because it's performance and speed are reported to be better than DADA2's standard workflow.
-This will still take ~20 min, so take a break. 
+However, this process takes ~20-30 min. If we are running low on time, we will skip this. 
 
 ```R
 # Assign Taxonomy ---------------------------------------------------------
@@ -332,6 +332,21 @@ dna <- DNAStringSet(getSequences(seqtab.nochim))
 # and finally classifying. This will take about ~20 min. 
 tax_info <- IdTaxa(test=dna, trainingSet=trainingSet, strand="both", processors=NULL)
 
+```
+
+If we did not have time, then download the classification/taxonomy table that I ran ahead of time for you using the Terminal in R. 
+
+```bash
+wget https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax-info.RData
+```
+If `wget` does not work, try curl instead:
+```bash
+curl -L -O https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax-info.RData
+```
+
+To load the object into R, do this:
+```R
+load("tax-info.RData") 
 ```
 
 Ok, let's convert the output object of class "Taxa" to a taxonomic matrix analogous to the output if we had used the `assignTaxonomy` function instead. We will also generate a fasta file of our final ASV sequences and the count table. 
