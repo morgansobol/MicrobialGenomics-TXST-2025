@@ -93,7 +93,7 @@ This work was published, so I encourage you to check it out: https://www.frontie
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
-BiocManager::install("dada2", version = "3.18")
+BiocManager::install("dada2")
 
 # During installation, it will ask:
 # Do you want to install from sources the package which needs compilation? (yes/no/cancel) type yes, press enter
