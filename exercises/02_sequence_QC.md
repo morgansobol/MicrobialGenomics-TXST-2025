@@ -120,12 +120,6 @@ mkdir cutadapt
 cd cutadapt/
 ```
 
-Now copy over the data files we are working with to our current directory:
-```bash
-cp ../../data_dir/*.fq .
-ls
-```
-
 Now we will run cutadapt on paired-end mode, because, remember from lecture, most cases reads are sequenced in the forward and reverse direction, meaning each forward read should have a paired read. We will try with one sample first before running as a loop to process all samples at once. 
 
 ```bash
