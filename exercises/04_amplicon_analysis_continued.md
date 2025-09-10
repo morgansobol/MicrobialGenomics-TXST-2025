@@ -1,4 +1,4 @@
-# Week XX: 16S Amplicon analysis - Part 2
+# Week 04: 16S Amplicon analysis - Part 2
 
 In this tutorial, we will continue working with 16S amplicon data, this time comparing samples and performing statistical analysis. We will continue working in R, but handing off our Dada2 processed samples to the package Phyloseq. 
 
@@ -12,19 +12,13 @@ https://blogs.oregonstate.edu/earthmotes/2021/09/28/dada2-pipeline-for-16s-datas
 
 By the end of this exercise, you should be able to:
 
-- 
+- Understand why normalization is important for amplicon data.
+- Visualize and discuss community differences using diversity metrics.
+- Interpret diversity indices to describe within and between sample differences.
 
 ## 🧪 Step 1: Setting up the working environment and reading in the data
 Open a new script to work in and start by loading dada2 and these other packages:
 ```R
-library(dada2); packageVersion("dada2")
-library(tidyverse) ; packageVersion("tidyverse") 
-library(phyloseq) ; packageVersion("phyloseq") 
-library(vegan) ; packageVersion("vegan") 
-library(DESeq2) ; packageVersion("DESeq2")
-library(dendextend) ; packageVersion("dendextend") 
-library(viridis) ; packageVersion("viridis") 
-
 setwd("[insert path to directory you want to be in]")
 
 list.files() # make sure our files from last time are here
