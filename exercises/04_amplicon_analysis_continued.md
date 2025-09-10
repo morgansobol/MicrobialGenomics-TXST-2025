@@ -19,6 +19,10 @@ By the end of this exercise, you should be able to:
 ## 🧪 Step 1: Setting up the working environment and reading in the data
 Open a new script to work in and start by loading dada2 and these other packages:
 ```R
+install.packages("remotes")
+remotes::install_github("cpauvert/psadd")
+library("psadd")
+
 setwd("[insert path to directory you want to be in]")
 
 list.files() # make sure our files from last time are here
@@ -61,7 +65,7 @@ sample_info_tab
 ```
 
 Taking a look at the `sample_info_tab`, we see it has the 16 samples as rows, and four columns: 
-* 1) “temperature” for the temperature of the venting water was where collected;
+  1) “temperature” for the temperature of the venting water was where collected;
   2) “type” indicating if that sample is a water sample, rock, or biofilm;
   3) a characteristics column called “char” that just serves to distinguish between the main types of rocks (glassy, altered, or carbonate);
   4) “color”, which has different R colors we can use later for plotting.
@@ -93,10 +97,9 @@ First, let's check the sequence abundance at all our sites and graph it for visu
 
 ```R
 # Subsample data ----------------------------------------------------------
-
-Sequences_per_sample <- sample_sums(phyloseq_object)
-Sequences_per_sample
-sample_richness <- data.frame(Sequences = Sequences_per_sample, Sample_Site = Group)
+seqs_per_sample <- sample_sums(phyloseq_object)
+seqs_per_sample
+sample_richness <- data.frame(Sequences = seqs_per_sample, Sample_Site = Group)
 ```
 
 You see, we have almost a whole order of magnitude difference in sequence abundances. If we compare diversity metrics directly without accounting for these differences, the results could be biased toward the deeper sequenced samples, which may appear artificially more diverse simply because more sequences were recovered.
@@ -120,6 +123,8 @@ rarecurve(t(count_tab), step=100, col=sample_info_tab$color, lwd=2, ylab="ASVs",
 abline(v=(min(rowSums(t(count_tab)))))
 
 ```
+This view suggests that the rock samples have a greater richness (unique number of sequences recovered) than the water samples or the biofilm sample – based on where they all cross the vertical line of lowest sampling depth, which is not necessarily predictive of where they’d end up had they been sampled to greater depth. And again, just focusing on the brown and black lines for the two types of basalts we have, they seem to show similar trends within their respective groups that suggest the more highly altered basalts (brown lines) may host more microbial communities with greater richness than the glassier basalts (black lines).
+
 Note the line we drew with `abline` shows us what would happen if we just subsampled all samples only once at the minimum values of sequences in a sample, i.e. 1897. We would certainly lose some diversity that way, to the point of McMurdie & Holmes. Let's test this out we will do rarefaction with and without multiple sampling.
 
 ```R
@@ -139,30 +144,28 @@ So, yes, 440 ASVs were lost. Let's see what happens when we average across multi
 We will need to install the package first called `psadd`, which is an extension to phyloseq. 
 
 ```R
-install.packages("remotes")
-remotes::install_github("cpauvert/psadd")
-library("psadd")
 
-# same target depth, but now we want it to repeat the subsampling 1000 times. We also set the seed to 123. 
+# same target depth, but now we want it to repeat the subsampling 1000 times. We also set a "seed" of 123 (random number), which fixes the starting point of the random number generator, ensuring that the subsampling of 1897 sequences will always return the same subset of sequences each time the code is run.
+
 asv_rare <- multiple_rrarefy(ASV_physeq, sample.size=depth_target, 1000, 123)
 
 # confirm it worked first
-Sequences_per_sample <- sample_sums(asv_rare)
-Sequences_per_sample
+seqs_per_sample <- sample_sums(asv_rare)
+seqs_per_sample
 
 # Let's check if we lost any taxa. 
 ntaxa(ASV_physeq)
 ntaxa(asv_rare)
 ```
 
-We did not lose any taxa with this type or normalization, so I feel more confident about this approach. 
+We did not lose any taxa with this type of normalization, so I feel more confident about this approach. 
 
 Now we can continue our analysis. 
 
 ## 🧪 Step 4: Plotting ASV abundance
 
-You've probably seen one of those barplot figures in a paper somewhere that shows how the relative abundance of taxa differs between samples.
-Let's make one first before we assess any stats. We will need to turn our ASV counts into relative abundances, i.e. dividing each ASV’s count in a sample by the total number of sequences in that sample so that the values represent proportions that sum to one.
+You've probably seen one of those barplot figures in a paper somewhere that shows how the richness and evenness of taxa differ between samples.
+Let's make one first before we assess any stats. We will need to turn our ASV counts into relative abundances, i.e., dividing each ASV’s count in a sample by the total number of sequences in that sample so that the values represent proportions that sum to one.
 
 ```R
 # Abundance Analysis ------------------------------------------------------
@@ -225,7 +228,7 @@ A diversity index is a quantitative measure that is used to assess the level of 
 
 **Alpha diversity** describes the diversity within a single community/sample. It considers the number of different species in that sample (also referred to as species richness). Additionally, it can take the abundance of each species into account to measure how evenly taxa are distributed across the sample (also referred to as species evenness).
 
-One caveat to rarefaction is that the subsampling creates non-integer numbers (i.e., not whole numbers) and this is an issue for some diversity indices that require integers.
+One caveat to rarefaction is that subsampling creates non-integer numbers (i.e., not whole numbers) and this is an issue for some diversity indices that require integers.
 So we need to round our numbers to their nearest whole number and then put that count table back into our phyloseq object, like so:
 
 ```R
@@ -243,8 +246,8 @@ ASV_physeq_round <- phyloseq(
 )
 
 # Let's see how that changed our sequence counts
-Sequences_per_sample <- sample_sums(asv_tab_round)
-Sequences_per_sample
+seqs_per_sample <- sample_sums(asv_tab_round)
+seqs_per_sample
 ```
 
 What happens, unfortunately, is that we lose some rare taxa in each sample (those with counts <1). To be honest, I am not sure what a better workaround is here...
@@ -288,7 +291,7 @@ write.table(alpha_table, "ASVs_alpha_metrics.tsv",
 Typically, you would generate some exploratory visualizations like ordinations and hierarchical clusterings for an overview of how your samples relate to each other. 
 
 **Hierarchical clustering**
-We’re going to use Euclidean distances {explain euclidiean distances) to generate some exploratory visualizations of our samples. Since differences in sampling depths between samples can influence distance/dissimilarity metrics, we first need to somehow normalize across our samples.
+We’re going to use Euclidean distances {explain Euclidean distances) to cluster samples that share similarity with one another based on ASV profiles. 
 ```R
 euc_dist <- dist(t(asvs_rare))
 euc_clust <- hclust(euc_dist, method="ward.D2")
@@ -306,9 +309,11 @@ labels_colors(euc_dend) <- dend_cols
 
 plot(euc_dend, ylab="VST Euc. dist.")
 ```
-So from our first peek, the broadest clusters separate the biofilm, carbonate, and water samples from the basalt rocks, which are the black and brown labels. And those form two distinct clusters, with samples R8–R11 separate from the others (R1-R6, and R12). R8-R11 (black) were all of the glassier type of basalt with thin (~1-2 mm), smooth exteriors, while the rest (R1-R6, and R12; brown) had more highly altered, thick (>1 cm) outer rinds (excluding the oddball carbonate which isn’t a basalt, R7). This is starting to suggest that level of alteration of the basalt may be correlated with community structure. If we look at the map figure again (below), we can also see that level of alteration also co-varies with whether samples were collected from the northern or southern end of the outcrop as all of the more highly altered basalts were collected from the northern end.
+So from our first peek, the broadest clusters separate the biofilm, carbonate, and water samples from the basalt rocks, which are the black and brown labels. And those form two distinct clusters, with samples R8–R11 separate from the others (R1-R6, and R12). R8-R11 (black) were all of the glassier type of basalt with thin (~1-2 mm), smooth exteriors, while the rest (R1-R6, and R12; brown) had more highly altered, thick (>1 cm) outer rinds (excluding the oddball carbonate which isn’t a basalt, R7). 
 
-**Ordination**
+This is starting to suggest that level of alteration of the basalt may be correlated with community structure. If we look at the map figure again (below), we can also see that level of alteration also co-varies with whether samples were collected from the northern or southern end of the outcrop as all of the more highly altered basalts were collected from the northern end.
+
+**Ordination - Principal Coordinate Analysis**
 ```R
 # making our phyloseq object with transformed table
 rare_count_phy <- otu_table(asvs_rare, taxa_are_rows=T)
@@ -383,8 +388,7 @@ Here we’ll make some broad-level summarization figures. Phyloseq is also very 
 Let’s make a summary of all major taxa proportions across all samples, then summaries for just the water samples and just the rock samples. To start, we need to parse our count matrix by taxonomy. How you want to break things down will depend on your data and your question, as usual. Here, we’ll just generate a table of proportions of each phylum, and then breakdown the Proteobacteria to the class level.
 
 ```R
-# using phyloseq to make a count table that has summed all ASVs
-        # that were in the same phylum
+# using phyloseq to make a count table that has summed all ASVs that were in the same phylum
 phyla_counts_tab <- otu_table(tax_glom(ASV_physeq, taxrank="phylum")) 
 
   # making a vector of phyla names to set as row names
