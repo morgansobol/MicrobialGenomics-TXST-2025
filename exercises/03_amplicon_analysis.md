@@ -1,4 +1,4 @@
-# Week 2: 16S Amplicon analysis - Part 1
+# Week 3: 16S Amplicon analysis - Part 1
 
 Welcome to Week 2! 
 This week, you will finally start analyzing data. Specifically, we will be performing 16S amplicon analysis. From here on out, unless noted, we are working in R, not at the Unix-like command line. If you find you need a refresher in R basics, check out these pages: 
@@ -111,14 +111,13 @@ BiocManager::install("phyloseq")
 BiocManager::install("vegan")
 
 # load the packages
-library(dada2); packageVersion("dada2") #1.34.0
-library(decontam); packageVersion("decontam") #1.26.0
-library(DECIPHER); packageVersion("decipher") #3.2.0
-library(tidyverse) ; packageVersion("tidyverse") # 1.3.1
-library(phyloseq) ; packageVersion("phyloseq") # 1.50.0
-library(vegan) ; packageVersion("vegan") # 2.7.1
-library(dendextend) ; packageVersion("dendextend") # 1.19.1
-library(viridis) ; packageVersion("viridis") # 0.6.5
+library(dada2); packageVersion("dada2") 
+library(decontam); packageVersion("decontam")
+library(tidyverse) ; packageVersion("tidyverse") 
+library(phyloseq) ; packageVersion("phyloseq") 
+library(vegan) ; packageVersion("vegan") 
+library(dendextend) ; packageVersion("dendextend") 
+library(viridis) ; packageVersion("viridis") 
 
 # Setting Our Path --------------------------------------------------------
 
@@ -455,7 +454,7 @@ Now that concludes the end of the processing steps for 16S amplicon data in Dada
 
 Using the ASV_counts, ASV_taxonomy tables, and ASV.fa files, answer the following questions: 
 
-1. What are the 3 most abundant taxa in the sample you chose?
-2. Pick one of the three and tell me something about them (metabolism, lifestyle, other environments they are found, etc.). Provide references.
-3. Blast the ASV you chose on NCBI. What were the top hits? Did they match?
+1. What are the 3 most abundant ASVs in the sample you chose?
+2. Pick one of the three abundance ASVs and write a few sentences about the members of its genus, i.e. metabolism, lifestyle, environments they are found in, etc. Provide peer-reviewed references.
+3. Blast the ASV you chose on NCBI. What were the top hits? Did they match? Attach a screenshot. 
 
