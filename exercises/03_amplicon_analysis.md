@@ -9,8 +9,7 @@ This week, you will finally start analyzing data. Specifically, we will be perfo
 
 
 We will be following DADA2's tutorial + Mike Lee's tutorial on DADA2, using Mike's data (with some modifications) below. Thanks Mike!
-https://benjjneb.github.io/dada2/tutorial.html
-
+https://benjjneb.github.io/dada2/tutorial_1_8.html
 https://astrobiomike.github.io/amplicon/dada2_workflow_ex
 
 ---
@@ -134,17 +133,18 @@ rm(list=ls()) # remove any prior objects, start from a clean slate
 
 # Set Up Our Variables ----------------------------------------------------
 
-## first we're setting a few variables we're going to use ##
-  # one with all sample names, by scanning our "samples" file we made earlier
+# First, we're setting a few variables to hold info we will need
+# Let's make one with all sample names, by scanning our "samples" file we made earlier.
+
 samples <- scan("samples.txt", what="character")
 
-  # one holding the file names of all the forward reads
+# one holding the file names of all the forward reads
 forward_reads <- paste0(samples, "_sub_R1_trimmed.fq.gz")
-  # and one with the reverse
+
+# and one with the reverse reads
 reverse_reads <- paste0(samples, "_sub_R2_trimmed.fq.gz")
 
-  # and variables holding file names for the forward and reverse
-  # filtered reads we're going to generate below
+# and variables holding file names for the forward and reverse filtered reads we're going to generate below
 filtered_forward_reads <- paste0(samples, "_sub_R1_filtered.fq.gz")
 filtered_reverse_reads <- paste0(samples, "_sub_R2_filtered.fq.gz")
 ```
@@ -165,7 +165,7 @@ plotQualityProfile(reverse_reads[17:20])
 
 On these plots, the bases are along the x-axis, and the quality score on the y-axis. The black underlying heatmap shows the frequency of each score at each base position, the green line is the mean quality score at that base position, the orange is the median, and the dashed orange lines show the quartiles. The red line at the bottom shows what percentage of reads are that length
 
-All forwards look pretty similar to eachother, and all reverses look pretty similar to eachother, but worse than the forwards, which is common – chemistry gets tired 😞
+All forward look pretty similar to each other, and all reverses look worse than the forwards, which is common – chemistry gets tired 😞
 
 >[!NOTE]
 >In Phred talk the difference between a quality score of 40 and a quality score of 20 is an expected error rate of 1 in 10,000 vs 1 in 100. In this case, since we have full overlap with these primers and the sequencing performed (515f-806r, 2x300), we can be pretty conservative and trim these up a bit more. But it’s important to think about your primers and the overlap you’re going to have.
@@ -176,9 +176,9 @@ All forwards look pretty similar to eachother, and all reverses look pretty simi
 
 >[!TIP]
 > Zymo developed a tool called Figaro (I have not used it myself yet) that can help you choose DADA2 trimming parameters: https://github.com/Zymo-Research/figaro#figaro
-> If time permits, perhaps we can try later, but for now we will continue with trimming.
+> We won't use it here, but just wanted to point it out to test using during your projects if you are uncertain what trimming settings you need.
 
-In DADA2, this quality-filtering step is done with the `filterAndTrim()` function:
+In DADA2, the quality-filtering step is done with the `filterAndTrim()` function:
 ```R
 filtered_out <- filterAndTrim(forward_reads, filtered_forward_reads,
                 reverse_reads, filtered_reverse_reads, maxEE=c(2,2),
@@ -190,28 +190,31 @@ The second and fourth are the variables holding the file names of the output for
 
 And then we have a few parameters explicitly specified:
 - `maxEE` is the quality filtering threshold being applied based on the expected errors and in this case we are saying we want to throw the read away if it is likely to have more than 2 erroneous base calls (we are specifying for both the forward and reverse reads separately).
-- `rm.phix` removes any reads that match the PhiX bacteriophage genome, which is typically added to Illumina sequencing runs for quality monitoring. And minLen is setting the minimum length reads we want to keep after trimming.
-- As mentioned above, the trimming occurring beyond what we set with truncLen is coming from a default setting, `truncQ`, which is set to 2 unless we specify otherwise, meaning it trims all bases after the first quality score of 2 it comes across in a read.
-- There is also an additional filtering default parameter that is removing any sequences containing any Ns, `maxN`= 0 by default.
-- Then we have our `truncLen` parameter setting the minimum size to trim the forward and reverse reads to in order to keep the quality scores roughly above 30 overall.
+- `rm.phix` removes any reads that match the PhiX bacteriophage genome, which is typically added to Illumina sequencing runs for quality monitoring.
+- minLen is setting the minimum length reads we want to keep after trimming.
+- `truncQ`, which is set to 2 unless we specify otherwise, meaning it trims all bases after the first quality score of 2 it comes across in a read.
+- `maxN`= 0 by default (so we don't need to include here. This is also an additional filtering default parameter that is removing any sequences containing any Ns, i.e where no base was called
+- `truncLen` parameter setting the minimum length to trim the forward and reverse reads to in order to keep the quality scores roughly above 30 overall.
 
 As mentioned, the output read files were named in those variables we made above (“filtered_forward_reads” and “filtered_reverse_reads”), so those files were created when we ran the function – we can see them if we run `list.files()` in R, or by checking in our working directory in the terminal. 
 
-Let's check the object we generated called `filtered_out`, containing how many reads went in and how many reads made it out. 
-
-Now plot the reads like before using the `plotQualityProfile` function, *but* make sure you do it for the filtered reads this time. Try this yourself by typing the commands in the script and running them. They should look much better now. 
+Let's check the object we generated called `filtered_out`, containing how many reads went in and how many reads made it out. Plot the reads like before using the `plotQualityProfile` function, *but* make sure you do it for the filtered reads this time. Try this yourself by typing the commands in the script and running them. They should look much better now. 
 
 ## 🧪 Step 3: Generating an error model of our data
-The dada2 tool that we will use for this analysis uses a statistic approach that aims to predict if sequences are actually true biological sequences or are partly generated by errors that appear during sequencing.
+Dada2 tool uses a statistical approach that aims to predict if sequences are actually true biological sequences or are partly generated by errors that appear during sequencing, seperate from chimera removal. 
+Each sequencing run, even when all goes well, will have its own subtle variations to its error profile (e.g. a true T was actually called as a C). This step tries to assess that for both the forward and reverse reads. 
 
-Each sequencing run, even when all goes well, will have its own subtle variations to its error profile. This step tries to assess that for both the forward and reverse reads. It is one of the more computationally intensive steps of the workflow. We will use the `multithread=TRUE` to speed this up. 
+How it does this (as best as I can explain): For each base position and quality score, it tallies observed transitions (A→C, A→G, etc.) and compares expected errors (Phred scrore) to observed base transitions. Iteratively fits a model, inferring which sequences are “true” biological sequences, and using that inference to better estimate the error rates.
+
+
+It is one of the more computationally intensive steps of the workflow. We will use the `multithread=TRUE` to speed this up, which uses parallel processing (multiple CPU cores) instead of just one.
 ```R
 # Generate an Error Model -------------------------------------------------
 
 err_forward_reads <- learnErrors(filtered_forward_reads, multithread=TRUE)
 err_reverse_reads <- learnErrors(filtered_reverse_reads, multithread=TRUE)
 ```
-Now we plot these results to see what errors we have (ignore the warnings). 
+Now we plot these results to see what errors we have (ignore the R warnings). 
 ```R
 plotErrors(err_forward_reads, nominalQ=TRUE)
 plotErrors(err_reverse_reads, nominalQ=TRUE)
@@ -224,6 +227,7 @@ Dereplication is a common step in many amplicon processing workflows. Instead of
 
 The dereplication step is technically no longer listed as part of the standard dada2 tutorial, as it is performed by the dada() step if given filenames.
 But, it can be lighter on memory requirements to run them as separate steps like done here, so it is left this way here for the sake of keeping things going. 
+Verbose=TRUE, just tells R that we want to see progress messages, summaries, and warnings to monitor the command as it runs.
 
 ```R
 # Dereplication -----------------------------------------------------------
@@ -235,23 +239,35 @@ names(derep_reverse) <- samples
 ```
 
 ## 🧪 Step 5: Inferring ASVs
-We are now ready to apply the core algorithim, `dada`, and see what it was made to do, that is to do its best to infer true biological sequences. 💪
+We are now ready to apply the core algorithim, `dada`, and see what it was made to do, that is to do its best to infer true biological sequence variants. 💪
 
 The dada2 tool will inspect every sequence and decide, based on the error model, if a sequence is a real biological sequence with no errors or a sequence that contains errors.
+This step can be run on individual samples, which is the least computationally intensive manner but most tedious for us, or on all samples together, which increases the function’s ability to resolve low-abundance ASVs. 
 
-This step can be run on individual samples, which is the least computationally intensive manner, or on all samples together, which increases the function’s ability to resolve low-abundance ASVs. 
 >Imagine Sample A has 10,000 copies of sequence Z, and Sample B has 1 copy of sequence Z. Sequence Z would likely be filtered out of Sample B even though it was a “true” singleton among perhaps thousands of spurious singletons we needed to remove.
 
-Because running all samples together on large datasets can become impractical computationally, the developers also added a way to try to combine the best of both worlds they refer to as *pseudo-pooling*, which is explained very nicely here: https://benjjneb.github.io/dada2/pseudo.html#Pseudo-pooling.
+But because running all samples together on large datasets can become impractical computationally, the developers also added a way to try to combine the best of both worlds which they refer to as *pseudo-pooling*, which is explained very nicely here: https://benjjneb.github.io/dada2/pseudo.html#Pseudo-pooling. 
 
-This basically provides a way to tell Sample B that sequence Z is legit. But it’s noted at the end of the pseudo-pooling page that this is not always the best way to go, and it may depend on your experimental design which is likely more appropriate for your data – as usual. There are no one-size-fits-all solutions in bioinformatics! 
+<img width="1319" height="481" alt="image" src="https://github.com/user-attachments/assets/aa256b22-4896-444a-a84a-97abd691fb26" />
+
+
+That is, "pseudo-pooling", a two-step process in which independent sample processing is performed twice: First on the raw data alone, and then on the raw data again but this time informed by priors (i.e. a set of sequences that the user expects might be present in their samples due to some prior knowledge) generated from the first round of processing. Yielding results close to full-pooling of samples but with linear scaling in computation time. 
+
+
+<img width="1344" height="960" alt="image" src="https://github.com/user-attachments/assets/972c3e3b-0a9e-4f93-9c6f-e58337af0856" />
+
+
+This basically provides a way to tell Sample B that sequence Z is legit. But it’s noted at the end of the pseudo-pooling page that this is not always the best way to go, and it may depend on your experimental design which is likely more appropriate for your data – as usual. For example, samples repeatedly drawn from the same source such as in longitudinal experiments, pseudo-pooling can provide a more accurate description of ASVs at very low frequencies (e.g. present in 1-5 reads per sample). But, independent sample inference is still very accurate, and is less prone to reporting certain types of false-positives, such as contaminants, that are present at very low frequencies across many samples and that the pooling mode tends to detect. So use what works for your study! There are no one-size-fits-all solutions in bioinformatics! 
+
+Ok, let's run dada now with pseudo-pooling on forward and reverse reads separately. 
+
 ```R
 dada_forward <- dada(derep_forward, err=err_forward_reads, pool="pseudo", multithread=TRUE)
 dada_reverse <- dada(derep_reverse, err=err_reverse_reads, pool="pseudo", multithread=TRUE)
 ```
 
 ## 🧪 Step 6: Merging forward and reverse reads
-Now DADA2 merges the forward and reverse ASVs to reconstruct our full target amplicon requiring the overlapping region to be identical between the two. By default it requires that at least 12 bps overlap, but in our case the overlap should be much greater. If you remember above we trimmed the forward reads to 250 and the reverse to 200, and our primers were 515f–806r. After cutting off the primers we’re expecting a typical amplicon size of around 260 bases, so our typical overlap should be up around 190. However, that’s estimated based on E. coli 16S rRNA gene positions and very back-of-the-envelope-esque of course, so to allow for true biological variation and such I’m going ot set the minimum overlap for this dataset for 170. I’m also setting the trimOverhang option to TRUE in case any of our reads go passed their opposite primers (which I wouldn’t expect based on our trimming, but is possible due to the region and sequencing method).
+Now DADA2 merges the forward and reverse ASVs to reconstruct our full target amplicon, requiring the overlapping region to be identical between the two. By default, it requires that at least 12 bps overlap, but in our case the overlap should be much greater. If you remember above we trimmed the forward reads to 250 and the reverse to 200, and our primers were 515f–806r (291 bp). After cutting off the primers we’re expecting a typical amplicon size of around 260 bases, so our typical overlap should be up around 190 bp. However, that’s estimated based on E. coli 16S rRNA gene positions and very back-of-the-envelope-esque of course, so to allow for true biological variation and such I’m going to set the `minOverlap` for this dataset to 170 bp. I’m also setting the `trimOverhang` option to TRUE in case any of our reads go past their opposite primers (which I wouldn’t expect based on our trimming, but is possible due to the region and sequencing method).
 
 ```R
 # Merging Reads -----------------------------------------------------------
@@ -259,59 +275,72 @@ Now DADA2 merges the forward and reverse ASVs to reconstruct our full target amp
 merged_amplicons <- mergePairs(dada_forward, derep_forward, dada_reverse,
                     derep_reverse, trimOverhang=TRUE, minOverlap=170)
 
-    # this object holds a lot of information that may be the first place you'd want to look if you want to start poking under the hood
+# this object merged_amplicons holds a lot of information, so it may be the first place you'd want to look if you want to start poking under the hood.
+View(merged_amplicons)
 class(merged_amplicons) # list
 length(merged_amplicons) # 20 elements in this list, one for each of our samples
-names(merged_amplicons) # the names() function gives us the name of each element of the list 
+names(merged_amplicons) # the names() function gives us the name of each element of the list
 
-class(merged_amplicons$B1) # each element of the list is a dataframe that can be accessed and manipulated like any ordinary dataframe
+# each element of the list is a dataframe that can be accessed and manipulated like any ordinary dataframe, the $ sign says we only want info from sample B1
+class(merged_amplicons$B1) 
 
-names(merged_amplicons$B1) # the names() function on a dataframe gives you the column names
+# the names() function on a dataframe gives you the column names for each dataframe
+names(merged_amplicons$B1) 
 # "sequence"  "abundance" "forward"   "reverse"   "nmatch"    "nmismatch" "nindel"    "prefer"    "accept"
 ```
 
 ## 🧪 Step 7: Generating a count table
-Now we can generate a count table with the makeSequenceTable() function. This is one of the main outputs from processing an amplicon dataset. You may have also heard this referred to as a biome table, or an OTU matrix.
+Now we can generate an ASV count table with the `makeSequenceTable()` function. This is one of the main outputs from processing an amplicon dataset. You may have also heard this referred to as a biome table, or an OTU matrix.
 ```R
 # Generate a Count Table --------------------------------------------------
 
 seqtab <- makeSequenceTable(merged_amplicons)
 class(seqtab) # matrix
-dim(seqtab) # 20 2521
+dim(seqtab) # 20 2521, means 20 samples, 2521 ASVs
+View(seqtab)
 
-    ## don't worry if the numbers vary a little, this might happen due to different versions being used 
-    ## from when this was initially put together
+# Don't worry if the numbers vary a little, this might happen due to different versions being used from when this was initially put together
 ```
 
 The count table is a matrix with rows corresponding to (and named by) the samples, and columns corresponding to (and named by) the sequence variants. 
 
 ## 🧪 Step 8: Remove chimeras
-Chimeras are separate, individual sequences that were accidently joined in the process somewhere.The frequency of chimeric sequences varies substantially from dataset to dataset, and depends on on factors including experimental procedures and sample complexity.  DADA2 identifies likely chimeras by aligning each sequence with those that were recovered in greater abundance and then seeing if there are any lower-abundance sequences that can be made exactly by mixing left and right portions of two of the more-abundant ones. 
+Chimeras are separate, individual sequences that were accidentally joined in the process somewhere (sequencing or bioinfomatically). The frequency of chimeric sequences varies substantially from dataset to dataset, and depends on factors including experimental procedures and sample complexity. DADA2 identifies likely chimeras by aligning each sequence with those that were recovered in greater abundance and then seeing if there are any lower-abundance sequences that can be made exactly by mixing left and right portions of two of the more-abundant ones. 
 > ![image](https://github.com/user-attachments/assets/210b6caf-5af1-4a86-bbef-f58bfd62d880)
 ```R
 # Removing chimeras -------------------------------------------------------
 
 seqtab.nochim <- removeBimeraDenovo(seqtab, verbose=T) # Identified 17 bimeras out of 2521 input sequences.
 
-    # though we only lost 17 sequences, we don't know if they held a lot in terms of abundance, this is one quick way to look at that
-sum(seqtab.nochim)/sum(seqtab) # 0.9931372 # in this case we barely lost any in terms of abundance
+# though we only lost 17 sequences, we don't know if they held a lot in terms of abundance, this is one quick way to look at that
+sum(seqtab.nochim)/sum(seqtab) # 0.993133 # in this case we barely lost any in terms of abundance
 
-    ## don't worry if the numbers vary a little, this might happen due to different versions being used 
-    ## from when this was initially put together
 ```
 Let's take a look at what has happened to our input for each sample
 ```R
 # Count Overview ----------------------------------------------------------
 
-    # set a little function
+# set a little function to get the unique ASVs detected in "x" and their abundances (number of reads)
 getN <- function(x) sum(getUniques(x))
 
-    # making a little table
+# making a little table
 summary_tab <- data.frame(row.names=samples, dada2_input=filtered_out[,1],
                filtered=filtered_out[,2], dada_f=sapply(dada_forward, getN),
                dada_r=sapply(dada_reverse, getN), merged=sapply(merged_amplicons, getN),
                nonchim=rowSums(seqtab.nochim),
                final_perc_reads_retained=round(rowSums(seqtab.nochim)/filtered_out[,1]*100, 1))
+
+summary_tab <- data.frame(
+  row.names = samples,
+  dada2_input = filtered_out[,1],                          # Reads input to filtering
+  filtered   = filtered_out[,2],                           # Reads that passed filtering
+  dada_f     = sapply(dada_forward, getN),                 # Reads after forward denoising
+  dada_r     = sapply(dada_reverse, getN),                 # Reads after reverse denoising
+  merged     = sapply(merged_amplicons, getN),             # Reads after merging pairs
+  nonchim    = rowSums(seqtab.nochim),                     # Reads remaining after chimera removal
+  final_perc_reads_retained = round(
+    rowSums(seqtab.nochim) / filtered_out[,1] * 100, 1)    # % retained from input
+)
 
 summary_tab
 
@@ -320,39 +349,23 @@ write.table(summary_tab, "read-count-tracking.tsv", quote=FALSE, sep="\t", col.n
  
 ```
 ## 🧪 Step 9: Assign taxonomy (finally the cool stuff!)
-We are going to be using the alternative classification method with the DECIPHER package because it's performance and speed are reported to be better than DADA2's standard workflow.
-However, this process takes ~20-30 min. If we are running low on time, we will skip this. 
+The `assignTaxonomy` function takes as input a set of sequences to be classified and a training set of reference sequences with known taxonomy, and outputs taxonomic assignments with at least `minBoot` bootstrap confidence.
+We will use the default of 50, or 50% =, which is the proportion of times that the classifier reaches the same taxonomic assignment across these resampled subsets. You can increase this to be more stringent if you want. 
 
 ```R
 # Assign Taxonomy ---------------------------------------------------------
 
-# downloading DECIPHER-formatted SILVA v138 reference
-download.file(url="https://www2.decipher.codes/data/Downloads/TrainingSets/GTDB_r226-mod_April2025.RData", destfile="GTDB_r226-mod_April2025.RData")
+# downloading GreenGenes2 2024.09 reference
+download.file(url="https://zenodo.org/records/14169078/files/gg2_2024_09_toSpecies_trainset.fa.gz?download=1",destfile="gg2_2024_09_toSpecies_trainset.fa.gz")
 
-# loading reference taxonomy object
-load("GTDB_r226-mod_April2025.RData")
+# assign taxonomy, this will take a few minutes 
+taxa_info <- assignTaxonomy(seqtab.nochim, "gg2_2024_09_toSpecies_trainset.fa.gz", multithread=TRUE)
 
-# creating DNAStringSet object of our ASVs
-dna <- DNAStringSet(getSequences(seqtab.nochim))
+taxa.print <- taxa_info # Removing sequence rownames for display only
+rownames(taxa.print) <- NULL
+head(taxa.print)
 
-# and finally classifying. This will take about ~20 min. 
-tax_info <- IdTaxa(test=dna, trainingSet=trainingSet, strand="both", processors=NULL)
 
-```
-
-If we did not have time, then download the classification/taxonomy table that I ran ahead of time for you using the Terminal in R. Go to Tools > Terminal > New Terminal. It will open next to your R console.
-
-```bash
-wget https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax_info.RData
-```
-If `wget` does not work, try curl instead:
-```bash
-curl -L -O https://raw.githubusercontent.com/morgansobol/MicrobialGenomics-TXST-2025/main/data/03_16S_amplicon/tax_info.RData
-```
-
-To load the object into R, do this:
-```R
-load("tax_info.RData") 
 ```
 
 Ok, let's convert the output object of class "Taxa" to a taxonomic matrix analogous to the output if we had used the `assignTaxonomy` function instead. We will also generate a fasta file of our final ASV sequences and the count table. 
@@ -360,87 +373,85 @@ Ok, let's convert the output object of class "Taxa" to a taxonomic matrix analog
 ```R
 # Extract the Output ------------------------------------------------------
 
-  # giving our seq headers more manageable names (ASV_1, ASV_2...)
+# giving our seq headers more manageable names (ASV_1, ASV_2...)
 asv_seqs <- colnames(seqtab.nochim)
 asv_headers <- vector(dim(seqtab.nochim)[2], mode="character")
 
 for (i in 1:dim(seqtab.nochim)[2]) {
-    asv_headers[i] <- paste(">ASV", i, sep="_")
+  asv_headers[i] <- paste(">ASV", i, sep="_")
 }
 
-    # making and writing out a fasta of our final ASV seqs:
+# making and writing out a fasta of our final ASV seqs:
 asv_fasta <- c(rbind(asv_headers, asv_seqs))
 write(asv_fasta, "ASVs.fa")
 
-    # count table:
+# count table:
 asv_tab <- t(seqtab.nochim)
 row.names(asv_tab) <- sub(">", "", asv_headers)
 write.table(asv_tab, "ASVs_counts.tsv", sep="\t", quote=F, col.names=NA)
 
-    # tax table:
-    # creating table of taxonomy and setting any that are unclassified as "NA"
+# tax table:
+# creating table of taxonomy and setting any that are unclassified as "NA"
 ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
 asv_tax <- t(sapply(tax_info, function(x) {
-    m <- match(ranks, x$rank)
-    taxa <- x$taxon[m]
-    taxa[startsWith(taxa, "unclassified_")] <- NA
-    taxa
-    }))
+  m <- match(ranks, x$rank)
+  taxa <- x$taxon[m]
+  taxa[startsWith(taxa, "unclassified_")] <- NA
+  taxa
+}))
 colnames(asv_tax) <- ranks
 rownames(asv_tax) <- gsub(pattern=">", replacement="", x=asv_headers)
 
 write.table(asv_tax, "ASVs_taxonomy.tsv", sep = "\t", quote=F, col.names=NA)
 ```
-## 🧪 Bonus Step: Remove contaminants
-Good science is all about good controls. Typically, sequencing projects should include a "blank" control, which is sample that never had DNA in it but went through the entire extraction and sequencing process. While we always hope the kits we use for such things are sterile, most of the times they actually are not 😬
+Let's view these files we created. 
 
-We will use the package `decontam` in "prevalence mode to help us. In this method, the prevalence (presence/absence across samples) of each sequence feature in true positive samples is compared to the prevalence in negative controls to identify contaminants. here: https://benjjneb.github.io/decontam/vignettes/decontam_intro.html 
+## 🧪 Bonus Step: Remove contaminants
+Good science is all about good controls. Typically, sequencing projects should include a "blank" control, which is a sample that never had DNA in it but went through the entire extraction and sequencing process. While we always hope the kits we use for such things are sterile, most of the time they actually are not 😬
+
+We will use the package `decontam` in prevalence mode to help us. In this method, the prevalence (presence/absence across samples) of each sequence feature in true positive samples is compared to the prevalence in negative controls to identify contaminants. here: https://benjjneb.github.io/decontam/vignettes/decontam_intro.html 
 
 So for `decontam` to work on our data, we need to provide it with our count table, currently stored in the “asv_tab” variable, and we need to give it a logical vector that tells it which samples are “blanks”. Here is making that vector and running the program:
 ```R
 # Decontamination ---------------------------------------------------------
 
-colnames(asv_tab) # our blanks are the first 4 of 20 samples in this case (B1, B2, B3, B4).
+colnames(asv_tab) # our blanks are the first 4 of 20 samples in this case
 vector_for_decontam <- c(rep(TRUE, 4), rep(FALSE, 16))
 
 contam_df <- isContaminant(t(asv_tab), neg=vector_for_decontam)
 
 table(contam_df$contaminant) # identified 6 as contaminants
 
-    ## don't worry if the numbers vary a little, this might happen due to different versions being used 
-    ## from when this was initially put together
-
-    # getting vector holding the identified contaminant IDs
+# getting vector holding the identified contaminant IDs
 contam_asvs <- row.names(contam_df[contam_df$contaminant == TRUE, ])
 
 asv_tax[row.names(asv_tax) %in% contam_asvs, ]
+
 ```
 Since there were only six here, I wanted to peek at them. And not surprisingly, they are all things that are commonly contaminants, but of course not exclusively (e.g. Burkholderia, Pseudomonas). We can see this by looking at their taxonomic designations in our tax table. 
 
-Let's also extract the contam sequences from the fasta files and blast against NCBI (a different database than GTDB) so we can possibly get an idea of what the NAs are. 
+Let's also extract the contam sequences from the fasta files and blast against NCBI so we can possibly get an idea of what the NAs are. 
 To do this, we can use the Terminal in R. 
 ```bash
-grep -w -A1 "^>ASV_104\|^>ASV_219\|^>ASV_230\|^>ASV_274\|^>ASV_285\|^>ASV_623" ASVs.fa
+grep -w -A1 "^>ASV_104\|^>ASV_219\|^>ASV_230\|^>ASV_274\|^>ASV_285\|^>ASV_622" ASVs.fa
 ```
 Now paste into NCBI Blast https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch&LINK_LOC=blasthome 
-
-What did you find differently? 
 
 And now, here is one way to remove the contaminants from our 3 primary outputs and create new files
 
 ```R
- # making new fasta file
+# let's remove them and make new files
 contam_indices <- which(asv_fasta %in% paste0(">", contam_asvs))
 dont_want <- sort(c(contam_indices, contam_indices + 1))
 asv_fasta_no_contam <- asv_fasta[- dont_want]
 
-    # making new count table
+# making new count table
 asv_tab_no_contam <- asv_tab[!row.names(asv_tab) %in% contam_asvs, ]
 
-    # making new taxonomy table
+# making new taxonomy table
 asv_tax_no_contam <- asv_tax[!row.names(asv_tax) %in% contam_asvs, ]
 
-    ## and now writing them out to files
+## and now writing them out to files
 write(asv_fasta_no_contam, "ASVs-no-contam.fa")
 write.table(asv_tab_no_contam, "ASVs_counts-no-contam.tsv",
             sep="\t", quote=F, col.names=NA)
@@ -448,7 +459,7 @@ write.table(asv_tax_no_contam, "ASVs_taxonomy-no-contam.tsv",
             sep="\t", quote=F, col.names=NA)
 ```
 
-Now that concludes the end of the processing steps for 16S amplicon data in Dada2. Next exercise we will analyze our data and explore differences between samples statistically! 
+Now that concludes DADA2 16S amplicon analysis. In the next exercise we will analyze our data and explore differences between samples statistically! 
 
 ## 📝 Assignment due before next lab on Canvas
 
