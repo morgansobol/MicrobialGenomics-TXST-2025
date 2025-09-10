@@ -362,9 +362,9 @@ download.file(url="https://zenodo.org/records/14169078/files/gg2_2024_09_toSpeci
 # assign taxonomy, this will take a few minutes 
 taxa_info <- assignTaxonomy(seqtab.nochim, "gg2_2024_09_toSpecies_trainset.fa.gz", multithread=TRUE)
 
-taxa.print <- taxa_info # Removing sequence rownames for display only
-rownames(taxa.print) <- NULL
-head(taxa.print)
+asv_tax <- taxa_info # Removing sequence rownames for display only
+rownames(asv_tax) <- NULL
+head(asv_tax)
 
 
 ```
@@ -392,14 +392,7 @@ row.names(asv_tab) <- sub(">", "", asv_headers)
 write.table(asv_tab, "ASVs_counts.tsv", sep="\t", quote=F, col.names=NA)
 
 # tax table:
-# creating table of taxonomy and setting any that are unclassified as "NA"
-ranks <- c("domain", "phylum", "class", "order", "family", "genus", "species")
-asv_tax <- t(sapply(tax_info, function(x) {
-  m <- match(ranks, x$rank)
-  taxa <- x$taxon[m]
-  taxa[startsWith(taxa, "unclassified_")] <- NA
-  taxa
-}))
+ranks <- c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species")
 colnames(asv_tax) <- ranks
 rownames(asv_tax) <- gsub(pattern=">", replacement="", x=asv_headers)
 
