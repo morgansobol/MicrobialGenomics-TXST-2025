@@ -105,7 +105,7 @@ seqs_per_sample <- sample_sums(ASV_physeq)
 seqs_per_sample
 
 # make that into a dataframe
-sample_richness <- data.frame(Sequences = seqs_per_sample, Sample_Site = Group)
+sample_richness <- data.frame(Sequences = seqs_per_sample, Sample_Site = "Group")
 ```
 
 You see, we have almost a whole order of magnitude difference in sequence abundances. If we compare diversity metrics directly without accounting for these differences, the results could be biased toward the deeper sequenced samples, which may appear artificially more diverse simply because more sequences were recovered.
