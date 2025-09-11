@@ -23,6 +23,7 @@ install.packages("remotes")
 remotes::install_github("cpauvert/psadd")
 library("psadd")
 
+# If you are not already in the dada2 directory, setwd to get there
 setwd("[insert path to directory you want to be in]")
 
 list.files() # make sure our files from last time are here
