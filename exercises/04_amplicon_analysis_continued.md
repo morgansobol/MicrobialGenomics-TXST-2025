@@ -115,8 +115,8 @@ You see, we have almost a whole order of magnitude difference in sequence abunda
 
 To make fair statistical comparisons across samples, we need to account for these differences in sequencing depth. Rarefaction does this by subsampling each sample down to the same number of sequences, repeated many times, and averaging across the subsamplings. This ensures that observed differences in diversity reflect biology rather than uneven sequencing effort
 
->[!NOTE]
->There has been some debate in the field about what normalization methods to apply.
+> [!NOTE]
+> There has been some debate in the field about what normalization methods to apply.
 >
 > McMurdie & Holmes 2014 claim that too much data is lost when you use rarefaction, and instead suggest using the Variance Stabilizing Transformation offered through DESeq2. But many microbial environments are extremely variable in microbial composition, which would *violate* DESeq normalization assumptions of a constant abundance of a majority of species and of a balance of increased/decreased abundance for those species that do change. (paper here: https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003531)
 >
@@ -286,7 +286,7 @@ A diversity index is a quantitative measure that is used to assess the level of 
 * Shannon's = Measures _diversity_ as both richness and evenness (relative proportions of our ASVs). The value increases as you add more taxa, even if they are rare.
 * Simpson's = also measures both richness and evenness, but weights more on dominant taxa and is less sensitive to rare ones. 1 = very even; close to 0 = one or a few taxa dominate.
 
->[NOTE!]
+> [WARNING!]
 > These are just some metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV. 
 
 ```R
@@ -366,7 +366,7 @@ We can ask, are samples statistically significantly different based alteration, 
 
 The permutational multivariate analysis of variance (PERMANOVA) test is frequently used. Although nonparametric, it assumes homogeneity of dispersions (similar to equal variance). If dispersions differ strongly between groups, significance could be misleading. 
 
-> [TIP!]
+> [!TIP]
 > After all that is said and done, you should know that Phyloseq offers _Shiny-Phyloseq_, which is a web-browser GUI to where you can point and click instead of write code to do your analysis and make figures. Ofc, this does not replace the flexibility of coding your own data in R, but could be useful as a first exploration of your data.
 >To try it out, you need to first install in R:
 ```R
