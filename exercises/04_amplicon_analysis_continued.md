@@ -44,7 +44,7 @@ tax_tab <- as.matrix(read.table("ASVs_taxonomy-no-contam.tsv", header=T, row.nam
 
 We will also need a file Mike provided from the data_dir. Open the terminal in R and let's `cp` it here.
 ```bash
-cp ../../data_dir/dada2/sample_info.tsv .
+cp ../../data_dir/sample_info.tsv .
 ```
 
 Ok, proceed with loading it:
