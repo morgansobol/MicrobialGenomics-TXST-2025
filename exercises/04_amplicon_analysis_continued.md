@@ -75,6 +75,10 @@ Taking a look at the `sample_info_tab`, we see it has the 16 samples as rows, an
 This table can be made anywhere (e.g. in R, in excel, at the command line), you just need to make sure you read it into R properly (which you should always check just like we did here to make sure it came in correctly).
 
 ## 🧪 Step 2: Make a Phyloseq Object
+Phyloseq is an R package to import, store, analyze, and graphically display complex phylogenetic sequencing data that has already been clustered into OTUs or ASVs. It leverages and builds upon many of the tools available in R for ecology and phylogenetic analysis (vegan, ade, ape), while also using advanced/flexible graphic systems (ggplot2) to easily produce publication-quality graphics. Check out more, including tutorials on what else it can do: https://joey711.github.io/phyloseq/ 
+
+It stores sequencing data as a single, self-consistent, self-describing experiment-level object, making it easier to use. Let's make that "object". 
+
 ```R
 # Make a Phyloseq object --------------------------------------------------
 
@@ -281,10 +285,8 @@ A diversity index is a quantitative measure that is used to assess the level of 
 * Shannon's = Measures _diversity_ as both richness and evenness (relative proportions of our ASVs). The value increases as you add more taxa, even if they are rare.
 * Simpson's = also measures both richness and evenness, but weights more on dominant taxa and is less sensitive to rare ones. 1 = very even; close to 0 = one or a few taxa dominate.
 
-<img width="710" height="578" alt="image" src="https://github.com/user-attachments/assets/5163ba93-5cdf-4c15-bc46-08e1e203ecfb" />
-
 >[NOTE!]
-> These are just metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV. 
+> These are just some metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV. 
 
 ```R
 # Alpha diversity ---------------------------------------------------------
@@ -343,7 +345,7 @@ plot(asv_dend, ylab="Bray-Curtis Distance")
 ```
 So from our first peek, the broadest clusters separate the biofilm, carbonate, glassy, and water samples from the altered basalt rocks, which are the brown labels. R8-R11 (black) were all of the glassier type of basalt with thin (~1-2 mm), smooth exteriors, while the rest (R1-R6, and R12; brown) had more highly altered, thick (>1 cm) outer rinds (excluding the oddball carbonate which isn’t a basalt, R7). 
 
-**Ordination**
+**Ordination clustering**
 ```R
 asv_pcoa <- ordinate(ASV_physeq, method="PCoA", distance="bray")
 
@@ -359,9 +361,22 @@ This is starting to suggest that level of alteration of the basalt may be correl
 <img width="800" height="436" alt="image" src="https://github.com/user-attachments/assets/f3aed91d-1f8e-4d12-827f-ed3b5edb9a55" />
 
 
+We can ask, are samples statistically significantly different based alteration, or "char" type? Microbiome data are compositional and generally violate many assumptions in statistical analyses, especially that of normality, so nonparametric tests (i.e., those that do not rely on assumptions about the distribution of the data) are often used. Moreover, given the number of pairwise comparisons that must be made to compare the samples, a multiple-testing correction should be applied to the P-value.
+
+The permutational multivariate analysis of variance (PERMANOVA) test is frequently used. Although nonparametric, it assumes homogeneity of dispersions (similar to equal variance). If dispersions differ strongly between groups, significance could be misleading. 
+
+>[TIP!]
+> After all that is said and done, you should know that Phyloseq offers _Shiny-Phyloseq_, which is a web-browser GUI to where you can point and click instead of write code to do your analysis and make figures. Ofc, this does not replace the flexibility of coding your own data in R, but could be useful as a first exploration of your data.
+>To try it out, you need to first install in R:
+```R
+install.packages("shiny")
+shiny::runGitHub("shiny-phyloseq","joey711")
+```
 ## 
 
 ## 📝 Assignment due next class on Canvas
 Perform a top-level exploration of one of the sample outputs and answer these three questions. 
+1. Determine the _prevalence_ of ASVs across all samples, i.e the number of samples in which an ASV appears at least once. Was there a single ASV that had the highest "prevalence", or were there multiple at equal prevalence? If so, what were they/it?
+2. 
 
 
