@@ -101,7 +101,7 @@ First, let's check the sequence abundance at all our sites and graph it for visu
 
 ```R
 # Normalize data ----------------------------------------------------------
-seqs_per_sample <- sample_sums(phyloseq_object)
+seqs_per_sample <- sample_sums(ASV_physeq)
 seqs_per_sample
 
 # make that into a dataframe
