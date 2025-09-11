@@ -419,8 +419,8 @@ shiny::runGitHub("shiny-phyloseq","joey711")
 ## 
 
 ## 📝 Assignment due next class on Canvas
-Perform a top-level exploration of the sample outputs and answer these two questions. 
-1. Determine the _prevalence_ of ASVs across all samples. Here we will define as the number of samples in which an ASV appears at least once. Was there a single ASV that had the highest "prevalence", or were there multiple at equal prevalence? If so, what were they/it?
-2. In our tutorial, we used Bray-Curtis distance matrix. Try a Jaccard distance matrix instead. Create the dendogram and PCoA plot, as well as redo the statistical analysis. Did your results change, why or why not? Provide screenshots of the new figures along with an explanation of what you observed. 
+Perform a top-level exploration of the sample outputs and answer this question. 
+1. Determine the _prevalence_ of ASVs across all samples. Here we will define as the number of samples in which an ASV appears at least once, i.e. how many samples each ASV is found in. Was there a single ASV that had the highest "prevalence", or were there multiple at equal prevalence? If so, what were they/it?
+
 
 
