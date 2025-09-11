@@ -367,7 +367,7 @@ We can ask, are samples statistically significantly different based alteration, 
 The permutational multivariate analysis of variance (PERMANOVA) test is frequently used. Although nonparametric, it assumes homogeneity of dispersions (similar to equal variance). If dispersions differ strongly between groups, significance could be misleading. 
 
 > [!TIP]
-> After all that is said and done, you should know that Phyloseq offers _Shiny-Phyloseq_, which is a web-browser GUI to where you can point and click instead of write code to do your analysis and make figures. Ofc, this does not replace the flexibility of coding your own data in R, but could be useful as a first exploration of your data.
+> After all that is said and done, you should know that Phyloseq offers _Shiny-Phyloseq_, which is a web-browser GUI to where you can point and click instead of write code to do your analysis and make figures. Of course, this does not replace the flexibility of coding your own data in R, but could be useful as a first exploration of your data.
 >To try it out, you need to first install in R:
 ```R
 install.packages("shiny")
