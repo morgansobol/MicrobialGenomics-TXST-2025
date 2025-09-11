@@ -35,12 +35,10 @@ list.files() # make sure our files from last time are here
 
 # blanks are removed, i.e. -c(1:4), because we already decontaminated the data
 # this also creates ASVs with no counts in any other sample, so we need to remove them
-count_tab <- read.table("ASVs_counts-no-contam.tsv", header=T, row.names=1,
-             check.names=F, sep="\t")[ , -c(1:4)]
+count_tab <- read.table("ASVs_counts-no-contam.tsv", header=T, row.names=1, check.names=F, sep="\t")[ , -c(1:4)]
 count_tab <- count_tab[rowSums(count_tab) > 0, ]
 
-tax_tab <- as.matrix(read.table("ASVs_taxonomy-no-contam.tsv", header=T,
-           row.names=1, check.names=F, sep="\t"))
+tax_tab <- as.matrix(read.table("ASVs_taxonomy-no-contam.tsv", header=T, row.names=1, check.names=F, sep="\t"))
 
 ```
 
@@ -51,8 +49,7 @@ cp ../../data_dir/dada2/sample_info.tsv .
 
 Ok, proceed with loading it:
 ```R
-sample_info_tab <- read.table("sample_info.tsv", header=T, row.names=1,
-                   check.names=F, sep="\t")
+sample_info_tab <- read.table("sample_info.tsv", header=T, row.names=1, check.names=F, sep="\t")
   
 # Setting the color column to be of type "character", which helps later
 sample_info_tab$color <- as.character(sample_info_tab$color)
@@ -169,8 +166,7 @@ ntaxa(asv_multi_rare)
 
 # write that to a new file
 asv_norm <- as(otu_table(asv_multi_rare), "matrix")
-write.table(asv_norm, "ASVs_normalized.tsv",
-            sep="\t", quote=F, col.names=NA)
+write.table(asv_norm, "ASVs_normalized.tsv", sep="\t", quote=F, col.names=NA)
 
 ```
 
@@ -280,11 +276,13 @@ ggplot(df, aes(x = Sample, y = Abundance, fill = Phylum2)) +
 
 A diversity index is a quantitative measure that is used to assess the level of diversity or variety within a particular system, such as a microbial community. 
 
-**Alpha diversity** describes the diversity within a single community/sample. It considers the number of different species in that sample (also referred to as species richness). Additionally, it can take the abundance of each species into account to measure how evenly taxa are distributed across the sample (also referred to as species evenness).
+**Alpha diversity** describes the diversity within a single community/sample. It considers the number of different species in that sample (also referred to as species richness). Additionally, it can take the abundance of each species into account to measure how evenly taxa are distributed across the sample (also referred to as species evenness). 
 
 * Chao1 = Measures total _richness_, so observed + rare taxa inferred from singletons/doubletons. The higher the value, the greater the number of ASVs. 
 * Shannon's = Measures _diversity_ as both richness and evenness (relative proportions of our ASVs). The value increases as you add more taxa, even if they are rare.
 * Simpson's = also measures both richness and evenness, but weights more on dominant taxa and is less sensitive to rare ones. 1 = very even; close to 0 = one or a few taxa dominate.
+
+To compare alpha diversity across samples, would be to ask if the mean or median of these calculated indices differs across groups.
 
 > [WARNING!]
 > These are just some metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV. 
@@ -292,27 +290,45 @@ A diversity index is a quantitative measure that is used to assess the level of 
 ```R
 # Alpha diversity ---------------------------------------------------------
 
-# We call on phyloseq's the plot_richness() function on our phyloseq object
+# We call on phyloseq's estimate_richness() function to calculate alpha diversity using Chao1, Shannon, and Simpson
+asv_alpha <- estimate_richness(ASV_physeq, measures = c("Observed", "Chao1", "Shannon", "Simpson"))
 
-plot_richness(ASV_physeq, color="char", measures=c("Chao1", "Shannon", "Simpson")) + 
-  scale_color_manual(values=unique(sample_info_tab$color[order(sample_info_tab$char)])) + theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+# add sample info and save output
+asv_alpha <- cbind(asv_alpha, as(sample_data(ASV_physeq), "data.frame"))
+write.table(asv_alpha, "ASVs_alpha-diversity.tsv", sep="\t", quote=F, col.names=NA)
+
+# We call on phyloseq's plot_richness() function on our phyloseq object to plot the data
+plot_richness(ASV_physeq , color="char", measures=c("Observed", "Chao1", "Shannon", "Simpson")) + scale_color_manual(values=unique(sample_info_tab$color[order(sample_info_tab$char)])) + theme_bw() + theme(legend.title = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 ```
-What can we say about the samples' alpha diversity?
+What can we say about alpha diversity across the samples?
 
-It would be nice to also have our calculated indices as a file to have saved. We will use the `microbiome` R package for that.
+We can also ask, are samples significantly different based on sample type or sample alteration ("char")? Microbiome data is compositional and generally violates many assumptions in statistical analyses, especially that of normality, so nonparametric tests (i.e., those that do not rely on assumptions about the distribution of the data) are often used. Moreover, given the number of pairwise comparisons that must be made to compare the samples, a multiple-testing correction should be applied to the P-value.
+
+Kruskal–Wallis and Wilcoxon rank-sum are rank-based statistical tests. They require each group to have at least two observations so ranks can be meaningfully compared. 
+> Wilcoxon compares two groups, i.e.  _Is diversity different between rock vs water samples?_
+> Pairwise-wilcoxon compares groups to one another, i.e. _Does diversity differ between water vs glassy, water vs altered, or glassy vs altered?_
+> Kruskal compares multiple groups, i.e. _Is diversity different across water, glassy, and altered rocks?_
 
 ```R
-BiocManager::install("microbiome")
-library(microbiome)
-alpha_table <- microbiome::alpha(ASV_physeq, index = "all")
-write.table(alpha_table, "ASVs_alpha_metrics.tsv",
-            sep="\t", quote=F, col.names=NA)
+# Now let's subset the data to remove biolfim and carbonate since they are only one sample
 
+asv_sub <- subset(asv_alpha, char %in% c("water","glassy","altered"))
+asv_sub
+
+# Test differences Chao1
+kruskal.test(Chao1 ~ char, data=asv_sub)
+
+pairwise.wilcox.test(
+  asv_sub$Chao1,
+  asv_sub$char,
+  p.adjust.method = "BH")
 ```
+Where do we see significant differences? 
+What about for Shannon and Simpson?
 
 ## 🧪 Step 6: Calculate beta diversity
 
-**Beta diversity**, also called "between-sample diversity", is a measurement of the distance, or difference, between samples. It involves calculating metrics such as distances or dissimilarities based on pairwise comparisons of samples so we can relate samples to each other. 
+**Beta diversity**, also called "between-sample diversity", is a measurement of the distance, or difference, between samples. It involves calculating metrics such as distances or dissimilarities based on pairwise comparisons of samples so we can relate samples to each other. What stats do for us is determine the overall variation in the distance matrix and test whether groups of samples differ in community composition. 
 
 Typically, you would generate some exploratory visualizations like ordinations and hierarchical clusterings for an overview of how your samples relate to each other. 
 Let's look at all the different distance approaches Phyloseq can use:
@@ -321,13 +337,19 @@ dist_methods <- unlist(distanceMethodList)
 print(dist_methods)
 ```
 We’re going to use Bray-Curtis dissimilarity to cluster samples that are similar to one another based on ASV profiles. 
+Bray-curtis looks at shared abundance between two samples. 
+> If samples share many taxa with similar abundances → low dissimilarity (close to 0).
+> If they have very different taxa or very different abundances → high dissimilarity (close to 1)
+
 ```R
 asv_dist <- phyloseq::distance(ASV_physeq, method = "bray")
+View(as.matrix(asv_dist))
 ```
 **Hierarchical clustering**
 
 ```R
 # dendogram
+# method = "average", means the distance between two clusters is defined as the average of all pairwise distances between the samples in cluster X and cluster Y.
 asv_hclust <- hclust(asv_dist, method="average")
 asv_dend <- as.dendrogram(asv_hclust, hang=0.1)
 
@@ -357,14 +379,35 @@ plot_ordination(ASV_physeq, asv_pcoa, color="char") +
   scale_color_manual(values=unique(sample_info_tab$color[order(sample_info_tab$char)])) + theme_bw() + theme(legend.position="none")
 ```
 
-This is starting to suggest that level of alteration of the basalt may be correlated with community structure. If we look at the map figure again (below), we can also see that level of alteration also co-varies with whether samples were collected from the northern or southern end of the outcrop as all of the more highly altered basalts were collected from the northern end.
+**Further statistical testing**
+
+The permutational multivariate analysis of variance (PERMANOVA) test is frequently used in comparing beta diversity, i.e. whether community composition differs among groups. It is an ANOVA for distance matrices. Although nonparametric, it assumes homogeneity of variability. If variability differs strongly between groups, significant results could be misleading. 
+
+One way to do this is with the `betadisper` and `adonis` functions from the `vegan` package. `adonis` can tell us if there is a statistical difference between groups, but it has an assumption that must be met that we first need to check with `betadisper`, and that is that there is a sufficient level of homogeneity of variability (dispersion) within groups. If there is not, then `adonis` can be unreliable.
+
+```R
+anova(betadisper(asv_dist, sample_info_tab$type))
+# So at least one type (water vs rock vs biofilm) is more variable than the others.
+
+adonis2(asv_dist~sample_info_tab$type)
+
+anova(betadisper(asv_dist, sample_info_tab$char))
+# Some “char” groups are tightly clustered, others very spread out from one another.
+
+adonis2(asv_dist~sample_info_tab$char)
+
+```
+
+Since `adonis` and `betadisper` are both significant, interpret cautiously: some groups may simply be more variable. That itself can be biologically meaningful. If one environment (say, biofilm) has communities that are very inconsistent, that’s an interesting ecological result, not necessarily an “error.” I think the "issue" is _the_ biofilm sample since it is so different from the others. It is not that the data is wrong, just a statistical concern for comparison. 
+We would just report the results from `betadisper` and `adonis`
+
+
+## Finale 
+
+Our data altogether is starting to suggest that the level of alteration of the basalt may be correlated with community structure. If we look at the map figure again (below), we can also see that level of alteration also co-varies with whether samples were collected from the northern or southern end of the outcrop as all of the more highly altered basalts were collected from the northern end.
 
 <img width="800" height="436" alt="image" src="https://github.com/user-attachments/assets/f3aed91d-1f8e-4d12-827f-ed3b5edb9a55" />
 
-
-We can ask, are samples statistically significantly different based alteration, or "char" type? Microbiome data are compositional and generally violate many assumptions in statistical analyses, especially that of normality, so nonparametric tests (i.e., those that do not rely on assumptions about the distribution of the data) are often used. Moreover, given the number of pairwise comparisons that must be made to compare the samples, a multiple-testing correction should be applied to the P-value.
-
-The permutational multivariate analysis of variance (PERMANOVA) test is frequently used. Although nonparametric, it assumes homogeneity of dispersions (similar to equal variance). If dispersions differ strongly between groups, significance could be misleading. 
 
 > [!TIP]
 > After all that is said and done, you should know that Phyloseq offers _Shiny-Phyloseq_, which is a web-browser GUI to where you can point and click instead of write code to do your analysis and make figures. Of course, this does not replace the flexibility of coding your own data in R, but could be useful as a first exploration of your data.
@@ -378,6 +421,6 @@ shiny::runGitHub("shiny-phyloseq","joey711")
 ## 📝 Assignment due next class on Canvas
 Perform a top-level exploration of the sample outputs and answer these two questions. 
 1. Determine the _prevalence_ of ASVs across all samples. Here we will define as the number of samples in which an ASV appears at least once. Was there a single ASV that had the highest "prevalence", or were there multiple at equal prevalence? If so, what were they/it?
-2. In our tutorial, we used Bray-Curtis distance matrix. Try a different distance matrix (just not Unifrac) offered by Phyloseq, create the dendogram and PCoA plot, as well as redo the statistical analysis. Did your results change, why or why not? Provide screenshots of the new figures along with an explanation of what you observed. 
+2. In our tutorial, we used Bray-Curtis distance matrix. Try a Jaccard distance matrix instead. Create the dendogram and PCoA plot, as well as redo the statistical analysis. Did your results change, why or why not? Provide screenshots of the new figures along with an explanation of what you observed. 
 
 
