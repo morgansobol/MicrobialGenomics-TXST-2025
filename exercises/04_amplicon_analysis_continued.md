@@ -190,7 +190,7 @@ asv_mat_round <- apply(asv_mat, c(1,2), function(x) {
   }
 })
 
-asv_norm_round <- data.frame(otu_table(asv_mat_round, taxa_are_rows = taxa_are_rows(asv_multi_rare)))
+asv_norm_round <- otu_table(asv_mat_round, taxa_are_rows = taxa_are_rows(asv_multi_rare))
 
 write.table(asv_norm_round, "ASVs_counts_rounded.tsv",
             sep="\t", quote=F, col.names=NA)
