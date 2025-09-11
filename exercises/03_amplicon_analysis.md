@@ -127,6 +127,8 @@ getwd() # where you are currently
 
 setwd("[insert path to directory you want to be in]")
 
+# If you don't have that, then open R Terminal and navigate to the dada2 working directory.
+
 list.files() # make sure what we think is here is actually here
 dir() # this works too
 
