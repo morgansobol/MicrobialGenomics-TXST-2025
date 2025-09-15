@@ -285,7 +285,43 @@ A diversity index is a quantitative measure that is used to assess the level of 
 To compare alpha diversity across samples, would be to ask if the mean or median of these calculated indices differs across groups.
 
 > [WARNING!]
-> These are just some metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV. 
+> These are just some metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV.
+> 
+
+If you need to reload your environment and did not save it, start here. Otherwise, we will continue with the next code block.
+
+```R
+# Make sure you are in your dada2 folder, otherwise you need to set your working directory there:
+getwd()
+setwd("path")
+
+# Load programs
+
+library(phyloseq)
+library(vegan)
+library(ggplot2)
+library(dendextend)
+
+# Make a Phyloseq object --------------------------------------------------
+
+count_tab <- as.matrix(read.table("ASVs_counts_rounded.tsv", header=T,
+                                  row.names=1, check.names=F, sep="\t"))
+
+tax_tab <- as.matrix(read.table("ASVs_taxonomy-no-contam.tsv", header=T,
+                                row.names=1, check.names=F, sep="\t"))
+
+sample_info_tab <- read.table("sample_info.tsv", header=T, row.names=1,
+                              check.names=F, sep="\t")
+
+
+count_tab_phy <- otu_table(count_tab, taxa_are_rows=T)
+sample_info_tab_phy <- sample_data(sample_info_tab)
+tax_tab_phy <- tax_table(tax_tab)
+ASV_physeq <- phyloseq(count_tab_phy, tax_tab_phy, sample_info_tab_phy)
+ASV_physeq
+
+```
+
 
 ```R
 # Alpha diversity ---------------------------------------------------------
@@ -374,8 +410,7 @@ asv_pcoa <- ordinate(ASV_physeq, method="PCoA", distance="bray")
 
 plot_ordination(ASV_physeq, asv_pcoa, color="char") + 
   geom_point(size=1) + labs(col="type") + 
-  geom_text(aes(label=rownames(sample_info_tab), hjust=0.3, vjust=-0.4)) + 
-  coord_fixed(sqrt(eigen_vals[2]/eigen_vals[1])) + ggtitle("PCoA") + 
+  geom_text(aes(label=rownames(sample_info_tab), hjust=0.3, vjust=-0.4)) + ggtitle("PCoA") + 
   scale_color_manual(values=unique(sample_info_tab$color[order(sample_info_tab$char)])) + theme_bw() + theme(legend.position="none")
 ```
 
