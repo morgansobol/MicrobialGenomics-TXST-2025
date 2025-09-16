@@ -288,7 +288,9 @@ To compare alpha diversity across samples, would be to ask if the mean or median
 > These are just some metrics to help compare & contrast our samples within an experiment, and should **not** be considered “true” values of any ASV.
 > 
 
-If you need to reload your environment and did not save it, start here. Otherwise, we will continue with the next code block.
+## Continue from Thursday
+
+If you need to reload your environment and did not save it, start here. Otherwise, you will continue with the 2nd code block.
 
 ```R
 # Make sure you are in your dada2 folder, otherwise you need to set your working directory there:
@@ -322,6 +324,7 @@ ASV_physeq
 
 ```
 
+Ok, now we can calculate diversity indices. 
 
 ```R
 # Alpha diversity ---------------------------------------------------------
@@ -338,20 +341,25 @@ plot_richness(ASV_physeq , color="char", measures=c("Observed", "Chao1", "Shanno
 ```
 What can we say about alpha diversity across the samples?
 
-We can also ask, are samples significantly different based on sample type or sample alteration ("char")? Microbiome data is compositional and generally violates many assumptions in statistical analyses, especially that of normality, so nonparametric tests (i.e., those that do not rely on assumptions about the distribution of the data) are often used. Moreover, given the number of pairwise comparisons that must be made to compare the samples, a multiple-testing correction should be applied to the P-value.
+We can also ask: are samples _significantly_ different based on sample type or sample alteration ("char")? 
+
+Microbiome data is compositional and generally violates many assumptions in statistical analyses, especially that of normality, so nonparametric tests (i.e., those that do not rely on assumptions about the distribution of the data) are often used. 
 
 Kruskal–Wallis and Wilcoxon rank-sum are rank-based statistical tests. They require each group to have at least two observations so ranks can be meaningfully compared. 
+> Kruskal compares multiple groups, i.e. _Is diversity different across water, glassy, and altered rocks?_
 > Wilcoxon compares two groups, i.e.  _Is diversity different between rock vs water samples?_
 > Pairwise-wilcoxon compares groups to one another, i.e. _Does diversity differ between water vs glassy, water vs altered, or glassy vs altered?_
-> Kruskal compares multiple groups, i.e. _Is diversity different across water, glassy, and altered rocks?_
+
+>[NOTE!]
+>Because multiple pairwise comparisons can inflate the chance of false positives, a multiple-testing correction should be applied to the P-value. Here, we use the Benjamini–Hochberg (BH) procedure, which controls the false discovery rate (FDR) by adjusting P-values so that the expected proportion of false positives among the declared significant results remains below a chosen threshold (typically 0.05). 
 
 ```R
-# Now let's subset the data to remove biolfim and carbonate since they are only one sample
+# Now let's subset the data to remove biofilm and carbonate since they have only one sample
 
 asv_sub <- subset(asv_alpha, char %in% c("water","glassy","altered"))
 asv_sub
 
-# Test differences Chao1
+# Test differences based on Chao1 metrics
 kruskal.test(Chao1 ~ char, data=asv_sub)
 
 pairwise.wilcox.test(
@@ -360,36 +368,41 @@ pairwise.wilcox.test(
   p.adjust.method = "BH")
 ```
 Where do we see significant differences? 
-What about for Shannon and Simpson?
+Do the results differ for Shannon and Simpson?
 
 ## 🧪 Step 6: Calculate beta diversity
 
 **Beta diversity**, also called "between-sample diversity", is a measurement of the distance, or difference, between samples. It involves calculating metrics such as distances or dissimilarities based on pairwise comparisons of samples so we can relate samples to each other. What stats do for us is determine the overall variation in the distance matrix and test whether groups of samples differ in community composition. 
 
 Typically, you would generate some exploratory visualizations like ordinations and hierarchical clusterings for an overview of how your samples relate to each other. 
+
 Let's look at all the different distance approaches Phyloseq can use:
 ```R
 dist_methods <- unlist(distanceMethodList)
 print(dist_methods)
 ```
 We’re going to use Bray-Curtis dissimilarity to cluster samples that are similar to one another based on ASV profiles. 
-Bray-curtis looks at shared abundance between two samples. 
+Bray-curtis looks at shared abundance of ASVs between two samples. 
 > If samples share many taxa with similar abundances → low dissimilarity (close to 0).
 > If they have very different taxa or very different abundances → high dissimilarity (close to 1)
 
+Make the distance matrix
 ```R
 asv_dist <- phyloseq::distance(ASV_physeq, method = "bray")
 View(as.matrix(asv_dist))
 ```
+
 **Hierarchical clustering**
 
+Hierarchical clustering is an unsupervised (i.e. not using predefined numbers of groups) method that groups samples based on their similarity by iteratively merging or splitting clusters. The results are typically visualized as a dendrogram, where branch lengths reflect the relative distances between clusters. Here, we use method = "average" to specify that the distance between two clusters is defined as the average of all pairwise distances between the samples in cluster X and cluster Y.
+
 ```R
-# dendogram
-# method = "average", means the distance between two clusters is defined as the average of all pairwise distances between the samples in cluster X and cluster Y.
+# dendrogram
+
 asv_hclust <- hclust(asv_dist, method="average")
 asv_dend <- as.dendrogram(asv_hclust, hang=0.1)
 
-# plot dendogram and color by char type
+# plot dendrogram and color by char type
 # Make sure rownames(sample_info_tab) are your sample IDs
 color_map <- setNames(as.character(sample_info_tab$color),
                       rownames(sample_info_tab))
@@ -402,9 +415,12 @@ labels_colors(asv_dend) <- dend_cols
 
 plot(asv_dend, ylab="Bray-Curtis Distance")
 ```
-So from our first peek, the broadest clusters separate the biofilm, carbonate, glassy, and water samples from the altered basalt rocks, which are the brown labels. R8-R11 (black) were all of the glassier type of basalt with thin (~1-2 mm), smooth exteriors, while the rest (R1-R6, and R12; brown) had more highly altered, thick (>1 cm) outer rinds (excluding the oddball carbonate which isn’t a basalt, R7). 
+So, from our first peek, the broadest clusters separate the biofilm, carbonate, glassy, and water samples from the altered basalt rocks, which are the brown labels. R8-R11 (black) were all of the glassier type of basalt with thin (~1-2 mm), smooth exteriors, while the rest (R1-R6, and R12; brown) had more highly altered, thick (>1 cm) outer rinds (excluding the oddball carbonate, which isn’t a basalt, R7). 
 
 **Ordination clustering**
+
+Ordination clustering is a multivariate technique that reduces complex data into a few axes that capture the main patterns of variation. Samples are then visualized in this reduced space (2D or 3D), where their distances/clustering reflect dissimilarity/similarity. Often this is done as Principal Coordinates Analysis (PCoA). 
+
 ```R
 asv_pcoa <- ordinate(ASV_physeq, method="PCoA", distance="bray")
 
@@ -416,9 +432,21 @@ plot_ordination(ASV_physeq, asv_pcoa, color="char") +
 
 **Further statistical testing**
 
-The permutational multivariate analysis of variance (PERMANOVA) test is frequently used in comparing beta diversity, i.e. whether community composition differs among groups. It is an ANOVA for distance matrices. Although nonparametric, it assumes homogeneity of variability. If variability differs strongly between groups, significant results could be misleading. 
+The permutational multivariate analysis of variance (PERMANOVA) test is frequently used in comparing beta diversity, i.e. whether community composition differs among groups. It is an ANOVA, but for distance matrices. Although nonparametric, it also assumes homogeneity of variability. Like ANOVA, if variability differs strongly within sample groups, significant results between groups could be misleading. 
 
-One way to do this is with the `betadisper` and `adonis` functions from the `vegan` package. `adonis` can tell us if there is a statistical difference between groups, but it has an assumption that must be met that we first need to check with `betadisper`, and that is that there is a sufficient level of homogeneity of variability (dispersion) within groups. If there is not, then `adonis` can be unreliable.
+<img width="1238" height="1285" alt="image" src="https://github.com/user-attachments/assets/17ba1de6-f1d4-4607-8bdd-0a5f960d1384" />
+
+> Each sample is a point in multivariate space defined by its ASV profile, after computing distances.
+> The group centroid is the average position of all samples in that group.
+> The dispersion (variability) is the spread of those sample points around the centroid.
+
+So:
+> Low dispersion = samples in a group have very similar ASV compositions 
+> High dispersion = samples in a group differ widely in ASV composition 
+
+Differences in within-group scatter can reflect true biological heterogeneity (e.g., unstable or diverse ASV communities) or technical bias (e.g., sequencing depth or batch effects). 
+
+To do this, we will use the `betadisper` and `adonis` functions from the `vegan` package. `adonis` can tell us if there is a statistical difference between groups, but it has an assumption that must be met that we first need to check with `betadisper`, and that is that there is a sufficient level of homogeneity of variability (dispersion) within groups. If there is not, then `adonis` can be unreliable. 
 
 ```R
 anova(betadisper(asv_dist, sample_info_tab$type))
@@ -433,13 +461,12 @@ adonis2(asv_dist~sample_info_tab$char)
 
 ```
 
-Since `adonis` and `betadisper` are both significant, interpret cautiously: some groups may simply be more variable. That itself can be biologically meaningful. If one environment (say, biofilm) has communities that are very inconsistent, that’s an interesting ecological result, not necessarily an “error.” I think the "issue" is _the_ biofilm sample since it is so different from the others. It is not that the data is wrong, just a statistical concern for comparison. 
-We would just report the results from `betadisper` and `adonis`
+Since `adonis` and `betadisper` are both significant, interpret cautiously: some groups may simply be more variable. That itself can be biologically meaningful. If one environment (say, biofilm) has communities that are very inconsistent, that’s an interesting ecological result, not necessarily an “error.” I think the "issue" is _the_ biofilm sample since it is so different from the others and there is only one of them. It is not that the data is wrong, just a statistical concern for comparison. We would just report the results from `betadisper` and `adonis`
 
 
 ## Finale 
 
-Our data altogether is starting to suggest that the level of alteration of the basalt may be correlated with community structure. If we look at the map figure again (below), we can also see that level of alteration also co-varies with whether samples were collected from the northern or southern end of the outcrop as all of the more highly altered basalts were collected from the northern end.
+Our data altogether suggests that the level of alteration of the basalt may be correlated with community structure. If we look at the map figure again (below), we can also see that level of alteration also co-varies with whether samples were collected from the northern or southern end of the outcrop as all of the more highly altered basalts were collected from the northern end.
 
 <img width="800" height="436" alt="image" src="https://github.com/user-attachments/assets/f3aed91d-1f8e-4d12-827f-ed3b5edb9a55" />
 
