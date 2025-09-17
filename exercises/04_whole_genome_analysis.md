@@ -62,6 +62,20 @@ We will try out a different trimming tool, _Trimmomatic_. The parameters we ente
 
 ## 🧪 Exercise 3: Assembly
 
+```bash
+ln -s ../../..
+```
+```bash
+spades.py --isolate -1 unknown_R1_paired.fastq.gz -2 unknown_R2_paired.fastq.gz -o output -t 4 -k 21,33,55,77
+```
+
+```bash
+seqkit stats output/contigs.fasta
+```
+
+```bash
+grep -c ">" output/contigs.fasta
+```
 
 Now we’re going to put our isolate-genome assembly into the anvi’o framework and see just a few of the ways it can help us begin to look at our assembled genome.
 
