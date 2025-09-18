@@ -16,8 +16,11 @@ Let's make a new `conda` environment for assembly.
 ```bash
 conda create -n assembly -c bioconda -c conda-forge spades seqkit
 ```
-And now let's make an environment for Anvio, follow the steps at this link:
-https://anvio.org/install/macos/stable/#6-check-your-installation
+
+And now let's make an environment for Anvio. Follow the steps, starting at step #3 at this link:
+Yes, you Mac has Apple Silicon processor, so you need to run 
+`conda config --env --set subdir osx-64` before creating the conda environment. 
+https://anvio.org/install/macos/stable/ 
 
 Now navigate to /MicrobialGenomics-TXST-2025/data/ directory and make new directory `04_genomes`. 
 ```bash
