@@ -8,7 +8,9 @@ We will be back working in the command line, not in R.
 ## 🧠 Learning Objectives
 
 By the end of this exercise, you should be able to:
-- 
+- Assemble 
+- Annotate
+- Analyze your genome
 
 ## 🧪 Step 1: Setting up the working environment and reading in the data
 
@@ -259,7 +261,8 @@ anvi-summarize -c contigs.db -p unknown_profiled/PROFILE.db -C DEFAULT -o unknow
 anvi-interactive -c contigs.db -p unknown_profiled/PROFILE.db --title "Unknown assembly"
 ```
 Anvi'o visualization is really geared towards metagenomics/comparative genomics like so:
-<img width="246" height="200" alt="image" src="https://github.com/user-attachments/assets/db450eb1-8b50-4d0d-b68e-8b791785cab5" />
+
+<img width="1062" height="1066" alt="image" src="https://github.com/user-attachments/assets/5f4be3be-55ab-4d8f-a502-7467763054b6" />
 
 
 ## 📝 Assignment due next class on Canvas
