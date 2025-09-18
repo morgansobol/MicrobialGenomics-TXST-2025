@@ -26,7 +26,7 @@ Now let's make an environment for Anvio.
 
 1. Open this link: https://anvio.org/install/macos/stable/
 2. Start at Step 3. Yes, your Mac has an Apple Silicon processor, so you need to run `conda config --env --set subdir osx-64` before creating the conda environment.
-3. Stop at Step 4. If you receive no errors, proceed to Step 6 and run `anvi-self-test --suite mini` to check your installation.
+3. Stop after Step 4. If you receive no errors, proceed to Step 6 and run `anvi-self-test --suite mini` to check your installation.
 
 Ok, hopefully that all worked. We will now create our directories and download the data. 
 
