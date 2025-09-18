@@ -45,7 +45,7 @@ mkdir microgenomics-2025
 cd microgenomics-2025
 mkdir week4
 cd week4
-mkdir data_dir working_dir
+mkdir data_dir work_dir
 cd data_dir
 ```
 
