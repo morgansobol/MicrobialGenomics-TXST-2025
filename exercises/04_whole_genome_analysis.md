@@ -147,8 +147,8 @@ anvi-interactive -c contigs.db -p unknown_profiled/PROFILE.db --title "Unknown a
 ## 📝 Assignment due next class on Canvas
 1. Who does your genome belong to? (Hint: what can you do with the information in rRNAs.fa file)
 2. Using the provided cog_functions.txt, make a bar chart of COG functional categories. Count the number of genes per COG category letter (A, C, E, …). If a gene is annotated to multiple categories (entries separated by !!!), count it once for each category it belongs to. Label axes and add category names. Feel free to use Excel (easy) or R (advanced). If you use ChatGPT, provide a screenshot of the solution you used. 
-Example from Sobol et al 2023 _BMC Genomics_
-<img width="685" height="421" alt="image" src="https://github.com/user-attachments/assets/c85fa14d-da68-4267-99b9-736012eaf9ed" />
+Example:
+<img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/8f0804d9-c542-45f6-9c4b-780c4f335de7" />
 
 
 
