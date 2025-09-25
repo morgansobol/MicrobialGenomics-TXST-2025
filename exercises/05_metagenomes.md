@@ -122,6 +122,6 @@ anvi-get-sequences-for-gene-calls -c contigs.db -o genes_nt.fa
 
 
 ## 📝 Assignment due next class on Canvas
-1. Do you find genes that are present in C-section, not present in vaginal birth samples, or vis versa?
-2. Which genes have the most AA variation? Normalize by gene length because longer genes have more sites, so raw counts SAAVs will look bigger just due to length, not biology. Normalizing by length lets you compare apples to apples.
-3. What are these genes and what functions are involved in? (Use fasta and cog_functions.txt)
+1. Do you find genes that are present in C-section, not present in vaginal birth samples, or vis versa? (Use the gene_detection file)
+2. Give me the top three genes with the most AA variation? Normalize by gene length because longer genes have more sites, so raw counts SAAVs will look bigger just due to length, not biology. Normalizing by length lets you compare apples to apples. (Use the snvs.txt file)
+3. What are these genes and what functions are involved in? (Use fasta file and cog_functions.txt) 
