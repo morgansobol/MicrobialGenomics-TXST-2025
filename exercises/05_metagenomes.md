@@ -96,7 +96,7 @@ anvi-interactive -p PROFILE.db -c CONTIGS.db -C DEFAULT -b EVERYTHING --gene-mod
 
 We can export the data, but it would be just too much. So instead let's look at SAAVS (perhaps a bit more meaningful). 
 ```
-anvi-gen-variability-profile -c CONTIGS.db -p PROFILE.db -C DEFAULT -b EVERYTHING --engine NT --min-coverage-in-each-sample 1 --quince-mode --compute-gene-coverage-stats -o snvs.txt 
+anvi-gen-variability-profile -c CONTIGS.db -p PROFILE.db -C DEFAULT -b EVERYTHING --engine AA --min-coverage-in-each-sample 5 --quince-mode --compute-gene-coverage-stats -o snvs.txt 
 ```
 
 Some info on settings:
@@ -122,6 +122,6 @@ anvi-get-sequences-for-gene-calls -c contigs.db -o genes_nt.fa
 
 
 ## 📝 Assignment due next class on Canvas
-1. Do you find genes that are present in C-section, not present in vaginal birth samples?
+1. Do you find genes that are present in C-section, not present in vaginal birth samples, or vis versa?
 2. Which genes have the most AA variation? Normalize by gene length because longer genes have more sites, so raw counts SAAVs will look bigger just due to length, not biology. Normalizing by length lets you compare apples to apples.
 3. What are these genes and what functions are involved in? (Use fasta and cog_functions.txt)
