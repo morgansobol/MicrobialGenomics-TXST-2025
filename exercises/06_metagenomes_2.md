@@ -126,7 +126,7 @@ anvi-summarize -p PROFILE.db \
 open SUMMARY_AFTER_RENAME/index.html
 ```
 
-## 🧪 Step 3: Refining our individual MAGs
+## 🧪 Step 4: Refining our individual MAGs
 To straighten the quality of the MAGs collection, it is possible to visualize individual bins and if needed, refine them. For this we use the program anvi-refine. For instance, if you were to be interested in refining one of the bins in our current collection, you could run this command:
 ```
 anvi-refine -p PROFILE.db \
@@ -146,7 +146,7 @@ anvi-summarize -p PROFILE.db \
                -o SUMMARY_AFTER_REFINE
 ```
 
-## 🧪 Step 3: Manual vs Automatic Binning
+## 🧪 Step 5: Manual vs Automatic Binning
 Even if you prefer manual binning over automatic binning for the sake of accuracy and control over your data, automatic binning is an unavoidable need due to performance limitations associated with manual binning
 
 The directory additional-files/external-binning-results contains a number of files that describe the binning of contigs in the IGD based on various automatic and manual approaches. These files include (1) outputs from some of the well-known binning algorithms (i.e., GROOPM.txt, MAXBIN.txt, METABAT.txt, BINSANITY_REFINE.txt, MYCC.txt, and CONCOCT.txt), (2) the original binning of this dataset (SHARON_et_al.txt), and the manual binning performed in the anvi’o paper (MEREN_et_al.txt).
