@@ -17,11 +17,11 @@ By the end of this exercise, you should be able to:
 1. Navigate to the `microgenomics-2025` directory.
 2. Make a new directory called `week6` and move into that directory.
 3. Let's just make a `work_dir` since we will use last week's `data_dir`. 
-4. Move into the `work_dir` you just made.
+4. `cd` into the `work_dir` you just made.
 5. Activate the `anvio-8` conda environment.
 6. Make a shortcut (symlink) to the files we will use today here.
 ```bash
-ln -s ../../data_dir/INFANT-GUT-TUTORIAL/* .
+ln -s ../../week5/data_dir/INFANT-GUT-TUTORIAL/* .
 ls
 ```
 
@@ -76,33 +76,36 @@ At this point, we have an overall idea about the makeup of this metagenome, but 
 
 ## 🧪 Step 3: Manual binning
 I'm going to let you try to identify bins on your own first. A few tips:
-* Contigs are already cluctered together based on tetranucleotide (k=4) frequency.
+* Contigs are already clustered together based on tetranucleotide (k=4) frequency.
 * Shared/similar coverage of contigs usually indicates contigs that belong together.
-* If you click on the “Bins” tab at the top left, and then select the branch on the tree at the center that holds all the contigs, you will see a real-time estimate of % completion and redundancy.
+* You can increase the inner tree radius (e.g., 5,000) for a better binning experience in the `Main` tab, then save State and Draw. 
+* You can select the option show grid in the Main tab (additional settings) for a better demarcation of identified bins.
+* If you click on the “Bins” tab at the top left and then select the branch on the tree at the center that holds all the contigs, you will see a real-time estimate of % completion and redundancy.
 * You do not have to bin all contigs. Instead, try to identify bins corresponding to an actual genome. 
 * Please try to avoid bins with redundancy >10% to ensure they are more accurate and not contaminated.
-* You can increase the inner tree radius (e.g., 5,000) for a better binning experience in the `Main` tab.
-* You can select the option show grid in the Main tab (additional settings) for a better demarcation of identified bins.
 
 Example:
 
 <img width="2634" height="1184" alt="image" src="https://github.com/user-attachments/assets/391d9576-5d96-4053-9862-7d57f643f97f" />
 
-Please save your bins as a `collection`. You can give your collection any name, but if you call it default, anvi’o will treat it differently. In the anvi’o lingo, a collection is something that describes one or more bins, each of which describes one or more contigs.
+Please save your bins as a `collection`. Let's give you collection a name "my_bins". In the anvi’o lingo, a collection is something that describes one or more bins, each of which describes one or more contigs.
 
 Let’s summarize the collection you have just created:
 ```
 anvi-summarize -p PROFILE.db \
                -c CONTIGS.db \
-               -C default \
+               -C my_bins \
                -o SUMMARY
+```
+```
+open SUMMARY/index.html
 ```
 
 As you can see from the summary file, at this point bin names are random. It would be more useful to put some order on this front. This becomes an extremely useful strategy, especially when the intention is to merge multiple binning efforts later. For this task we use the program anvi-rename-bins:
 ```
 anvi-rename-bins -p PROFILE.db \
                  -c CONTIGS.db  \
-                 --collection-to-read default  \
+                 --collection-to-read my_bins  \
                  --collection-to-write MAGs  \
                  --call-MAGs \
                  --prefix IGD \
@@ -119,14 +122,92 @@ anvi-summarize -p PROFILE.db \
                -o SUMMARY_AFTER_RENAME
 
 ```
+```
+open SUMMARY_AFTER_RENAME/index.html
+```
 
-You can now visualize the results by double-clicking on the index.html file present in the newly created folder SUMMARY_MAGs.
+## 🧪 Step 3: Refining our individual MAGs
+To straighten the quality of the MAGs collection, it is possible to visualize individual bins and if needed, refine them. For this we use the program anvi-refine. For instance, if you were to be interested in refining one of the bins in our current collection, you could run this command:
+```
+anvi-refine -p PROFILE.db \
+            -c CONTIGS.db \
+            -C MAGs \
+            -b IGD_MAG_00001
+```
+Now the interactive interface only displays contigs from a single bin. During this curation step, one can try different clustering strategies (i.e. by only relying on coverage, or only relying on sequence composition) to identify outliers and investigate carefully whether they may be contaminants. You can select everything and remove those contigs you don’t want to keep in the bin before using the Bins panel to store your updated set of contigs in the database.
 
-Refining individual MAGs
+Let's refine MAG_00001 together. I want you to do your other bins on your own. 
+Storing the new refined bins in the database and it will modify the collection for you, but you will need to re-run `anvi-summarize` if you want the summary output to also be updated.
 
+```
+anvi-summarize -p PROFILE.db \
+               -c CONTIGS.db \
+               -C MAGs \
+               -o SUMMARY_AFTER_REFINE
+```
 
+## 🧪 Step 3: Manual vs Automatic Binning
+Even if you prefer manual binning over automatic binning for the sake of accuracy and control over your data, automatic binning is an unavoidable need due to performance limitations associated with manual binning
+
+The directory additional-files/external-binning-results contains a number of files that describe the binning of contigs in the IGD based on various automatic and manual approaches. These files include (1) outputs from some of the well-known binning algorithms (i.e., GROOPM.txt, MAXBIN.txt, METABAT.txt, BINSANITY_REFINE.txt, MYCC.txt, and CONCOCT.txt), (2) the original binning of this dataset (SHARON_et_al.txt), and the manual binning performed in the anvi’o paper (MEREN_et_al.txt).
+
+You can use the program anvi-show-collections-and-bins to see all collections in your anvi’o profile database:
+```
+anvi-show-collections-and-bins -p PROFILE.db
+```
+And use this one to remove one that’s called default, if you have it:
+```
+anvi-delete-collection -p PROFILE.db \
+                       -C default
+```
+You can create a collection by using the interactive interface (e.g., the default and MAGs collections you just created), or you can import external binning results into your profile database as a collection and see how that collection groups contigs. For instance, let’s import the CONCOCT collection:
+```
+anvi-import-collection additional-files/external-binning-results/CONCOCT.txt \
+                       -c CONTIGS.db \
+                       -p PROFILE.db \
+                       -C CONCOCT \
+                       --contigs-mode
+
+```
+```
+anvi-show-collections-and-bins -p PROFILE.db
+```
+OK. Let’s run the interactive interface again with the CONCOCT collection:
+```
+anvi-interactive -p PROFILE.db \
+                 -c CONTIGS.db \
+                 --collection-autoload CONCOCT
+
+```
+How do your bins compare?
+
+Anvi’o also has a script called anvi-script-merge-collections to merge multiple files from external binning results into a single merged file (don’t ask why):
+```
+anvi-script-merge-collections -c CONTIGS.db \
+                              -i additional-files/external-binning-results/*.txt \
+                              -o collections.tsv
+```
+Visualize all binning results:
+```
+anvi-interactive -p PROFILE.db \
+                 -c CONTIGS.db \
+                 -A collections.tsv
+```
+
+To visually emphasize relationships between bins, the authors created a state file for us to match colors where bins match
+```
+anvi-import-state --state additional-files/state-files/state-merged.json \
+                  --name default \
+                  -p PROFILE.db
+```
+```
+anvi-interactive -p PROFILE.db \
+                 -c CONTIGS.db \
+                 -A collections.tsv
+
+```
+Based on this, would you refine your bins? Probably, but for now let's keep the ones you refined. 
 
 
 ## 📝 Assignment due next class on Canvas
-1. Calculate the relative abundance of bins across samples and generate a bar plot to show changes of bins across the days.
-2. 
+1. With std_coverage.txt file, make a plot of your choice to show chaning abundance of bins across the samples. Provide the code you use if using R. 
