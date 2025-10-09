@@ -27,6 +27,15 @@ We can see them here:
 ls additional-files/pangenomics/external-genomes/*db
 ```
 
+Import Efaecalis data. 
+```
+anvi-import-collection additional-files/collections/e-faecalis.txt \
+                       --bins-info additional-files/collections/e-faecalis-info.txt \
+                       -p PROFILE.db \
+                       -c CONTIGS.db \
+                       -C E_faecalis
+```
+
 Let's double-check we have the collections of bins we need, specifically looking for E_facealis (yes it's a typo, should be E_faecalis).
 ```
 anvi-show-collections-and-bins -p PROFILE.db
