@@ -187,6 +187,23 @@ anvi-interactive -p phylogenomic-profile.db \
 
 As you can see, many of the genomes have a flat line in the phylogenomic tree, which indicates that they have an identical set of the ribosomal proteins we used. This could often be the case for very closely related populations you want to study. 
 
-Let's use the pangenomic analysis from last week and select a random subset of core genes. 
+Let's use the pangenomic analysis from last week. Select 100 genes randomly, and store them in a new collection called "Some_SCGs" to generate a phylogenomic tree using those:
+```
+anvi-display-pan -g Enterococcus-GENOMES.db \
+                 -p PAN/Enterococcus-PAN.db \
+                 --title "Enterococccus Pan"
+```
+
+The program anvi-get-sequences-for-gene-clusters is what we will use to export alignments genes in gene clusters. Here, we declare the collection name and the bin id in our anvi’o pan database, and export sequences:
+```
+anvi-get-sequences-for-gene-clusters -g Salmonella-GENOMES.db \
+                                     -p Salmonella/Salmonella-PAN.db \
+                                     --collection-name default \
+                                     --bin-id Some_Core_PCs \
+                                     --concatenate-gene-clusters \
+                                     -o concatenated-proteins.fa
+```
+
+
 
 
