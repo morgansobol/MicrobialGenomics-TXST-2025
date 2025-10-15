@@ -14,10 +14,12 @@ By the end of this exercise, you should be able to:
 ## 🧪 Step 1: Reading in the data and setting up the working environment
 
 Like the last few weeks, you need to make a new `week8` directory inside your `microgenomics-2025` directory. 
-Move into your `week8` directory and make a `work_dir`. Copy the contents of `week7/work_dir/` here.
+Download the `work_dir` for this week from Canvas under Module Week 8 into 'week8` directory. 
+To unpack it:
 ```
-ln -s ln -s ../../week7/work_dir/* .
+unzip work_dir.zip
 ```
+Move into `work_dir`.
 
 Last thing, don't forget to activate your anvio conda environment. 
 
@@ -135,7 +137,7 @@ less seqs-for-phylogenomics.fa
 ```
 Congrats, we did it. Moving on. 
 
-## 🧪 Step 4: Compute a phylogenomic tree.
+## 🧪 Step 4: Compute a phylogenomic tree
 
 Once you have your concatenated genes, which you now have them in `seqs-for-phylogenomics.fa`, it is time to perform the phylogenomic analysis.
 Here we will use the program `anvi-gen-phylogenomic-tree`, which accepts a FASTA file and uses FastTree to infer phylogenetic trees.
@@ -151,4 +153,40 @@ anvi-interactive --tree phylogenomic-tree.txt \
                  --title "Pylogenomics of IGD Bins" \
                  --manual
 ```
+
+Now, we can see how related our bins are. For instance, we can see that the S. hominis, S. epidermidis, and S. aureus, all Staphylococci, are correctly placed next to one another. 
+The remaining bins are different organisms, placed appropriately from one another. 
+
+## 🧪 Step 5: Phylogenomics for closely related organisms
+
+What makes ribosomal SCGs powerful for some applications of phylogenomics, makes them weak for other applications. Comparing very similar genomes (pangenomics) may require the inclusion of a larger number of genes that occur in all genomes of interest to increase the signal of divergence. 
+
+Let's test this with our_ E. faecalis_ and _E. faecium_ genomes from last week. We will first grab the same ribosomal SCGs like before:
+
+```
+anvi-get-sequences-for-hmm-hits --external-genomes additional-files/pangenomics/external-genomes.txt \
+                                -o concatenated-proteins.fa \
+                                --hmm-source Bacteria_71 \
+                                --gene-names Ribosomal_L1,Ribosomal_L2,Ribosomal_L3,Ribosomal_L4,Ribosomal_L5,Ribosomal_L6 \
+                                --concatenate-genes \
+                                --return-best-hit \
+                                --get-aa-sequences
+```
+
+Compute the tree and visualize it
+```
+anvi-gen-phylogenomic-tree -f concatenated-proteins.fa \
+                           -o phylogenomic-tree.txt
+```
+```
+anvi-interactive -p phylogenomic-profile.db \
+                 -t phylogenomic-tree.txt \
+                 --title "Enterococcus genomes" \
+                 --manual
+```
+
+As you can see, many of the genomes have a flat line in the phylogenomic tree, which indicates that they have an identical set of the ribosomal proteins we used. This could often be the case for very closely related populations you want to study. 
+
+Let's use the pangenomic analysis from last week and select a random subset of core genes. 
+
 
