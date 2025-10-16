@@ -1,4 +1,4 @@
-# Week 7: Phylogenomics
+# Week 8: Phylogenomics
 
 In this tutorial, we will put our genomes in a phylogenomic context to compare them to each other. 
 The common practice is to concatenate aligned sequences of single-copy core genes for each genome of interest, and generate a phylogenomic tree by analyzing the resulting alignment.
