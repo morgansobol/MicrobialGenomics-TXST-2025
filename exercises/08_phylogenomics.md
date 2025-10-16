@@ -157,6 +157,7 @@ anvi-interactive --tree phylogenomic-tree.txt \
 Now, we can see how related our bins are. For instance, we can see that the S. hominis, S. epidermidis, and S. aureus, all Staphylococci, are correctly placed next to one another. 
 The remaining bins are different organisms, placed appropriately from one another. 
 
+
 ## 🧪 Step 5: Phylogenomics for closely related organisms
 
 What makes ribosomal SCGs powerful for some applications of phylogenomics, makes them weak for other applications. Comparing very similar genomes (pangenomics) may require the inclusion of a larger number of genes that occur in all genomes of interest to increase the signal of divergence. 
@@ -181,7 +182,7 @@ anvi-gen-phylogenomic-tree -f concatenated-proteins.fa \
 ```
 anvi-interactive -p phylogenomic-profile.db \
                  -t phylogenomic-tree.txt \
-                 --title "Enterococcus genomes" \
+                 --title "Enterococcus Tree" \
                  --manual
 ```
 
@@ -194,16 +195,29 @@ anvi-display-pan -g Enterococcus-GENOMES.db \
                  --title "Enterococccus Pan"
 ```
 
-The program anvi-get-sequences-for-gene-clusters is what we will use to export alignments genes in gene clusters. Here, we declare the collection name and the bin id in our anvi’o pan database, and export sequences:
+The program anvi-get-sequences-for-gene-clusters is what we will use to export alignments for genes in our gene clusters. Here, we declare the collection name and the bin id in our anvi’o pan database, and export sequences:
 ```
-anvi-get-sequences-for-gene-clusters -g Salmonella-GENOMES.db \
-                                     -p Salmonella/Salmonella-PAN.db \
+anvi-get-sequences-for-gene-clusters -g Enterococcus-GENOMES.db \
+                                     -p PAN/Enterococcus-PAN.db \
                                      --collection-name default \
-                                     --bin-id Some_Core_PCs \
+                                     --bin-id Some_SCGs \
                                      --concatenate-gene-clusters \
-                                     -o concatenated-proteins.fa
+                                     -o scgs-concatenated-proteins.fa \
+                                     --max-num-genes-from-each-genome 1
 ```
 
+Generate the new tree using the new SCGs
+```
+anvi-gen-phylogenomic-tree -f scgs-concatenated-proteins.fa \
+                           -o scgs-phylogenomic-tree.txt
+```
 
+View the tree now:
+```
+anvi-interactive -p phylogenomic-profile.db \
+                 -t scgs-phylogenomic-tree.txt \
+                 --title "Enterococcus Tree" \
+                 --manual
 
+```
 
