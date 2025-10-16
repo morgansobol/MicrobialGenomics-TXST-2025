@@ -1,14 +1,14 @@
 # Week 7: Phylogenomics
 
-In this tutorial, we will...
-
-Putting genomes in a phylogenomic context is one of the common ways to compare them to each other. 
+In this tutorial, we will put our genomes in a phylogenomic context to compare them to each other. 
 The common practice is to concatenate aligned sequences of single-copy core genes for each genome of interest, and generate a phylogenomic tree by analyzing the resulting alignment.
 
 ## 🧠 Learning Objectives
 
 By the end of this exercise, you should be able to:
-* Explain
+* Explain how single-copy core genes are identified and used in phylogenomics.
+* Interpret phylogenetic trees in the context of evolutionary relationships.
+* Recognize limitations and sources of bias in genome-based phylogenetic inference.
 
 
 ## 🧪 Step 1: Reading in the data and setting up the working environment
@@ -188,7 +188,7 @@ anvi-interactive -p phylogenomic-profile.db \
 
 As you can see, many of the genomes have a flat line in the phylogenomic tree, which indicates that they have an identical set of the ribosomal proteins we used. This could often be the case for very closely related populations you want to study. 
 
-Let's use the pangenomic analysis from last week. Select 100 genes randomly, and store them in a new collection called "Some_SCGs" to generate a phylogenomic tree using those:
+Let's use the pangenomic analysis from last week. Select ~50 genes randomly, and store them in a new collection called "Some_SCGs" to generate a phylogenomic tree using those:
 ```
 anvi-display-pan -g Enterococcus-GENOMES.db \
                  -p PAN/Enterococcus-PAN.db \
@@ -221,3 +221,4 @@ anvi-interactive -p phylogenomic-profile.db \
 
 ```
 
+## 📝 No assignment this week :)
