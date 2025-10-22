@@ -1,1 +1,28 @@
+# Week 9: Differential Expression Analysis
 
+Studies of **differential expression** generally aim to determine the differences between a **baseline condition** and an **experimental condition**.
+In the simplest case, expression levels are compared between two conditions—for example, **control vs. treatment** or **mutant vs. wild‑type**. 
+More complex experiments may include additional experimental factors, such as **multiple mutants** or **different doses of a drug**.
+
+In this tutorial, you will compare RNA‑Seq data obtained from different conditions in order to detect genes that are expressed with statistically significant differences. 
+
+We will be working in R this time.
+
+## 🧠 Learning Objectives
+
+By the end of this exercise, you should be able to:
+* Explain how single-copy core genes are identified and used in phylogenomics.
+* Interpret phylogenetic trees in the context of evolutionary relationships.
+* Recognize limitations and sources of bias in genome-based phylogenetic inference.
+
+
+## 🧪 Step 1: Reading in the data and setting up the working environment
+Like the last few weeks, you need to make a new `week9` directory inside your `microgenomics-2025` directory. 
+Make a `work_dir` inside `week9`. Then, from Canvas Module 9, download the data_dir.zip file and use `unzip` to unzip the directory. 
+Print your `week9` path using `pwd`. 
+
+Now open up R Studio. To set your path in R:
+```R
+setwd("copy/path/from/pwd")
+```
+Use the command `getwd()` to verify that `setwd()` worked. 
