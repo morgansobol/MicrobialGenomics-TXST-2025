@@ -1,19 +1,18 @@
 ## Week 9: Differential Expression Analysis
 
-Studies of **differential expression** generally aim to determine the differences between a **baseline condition** and an **experimental condition**.
-In the simplest case, expression levels are compared between two conditions—for example, **control vs. treatment** or **mutant vs. wild‑type**. 
-More complex experiments may include additional experimental factors, such as **multiple mutants** or **different doses of a drug**.
+Studies of differential gene expression generally aim to determine the differences between a baseline condition and an experimental condition. In the simplest case, expression levels are compared between two conditions—for example, control vs. treatment or mutant vs. wild‑type. More complex experiments may include additional experimental factors, such as multiple mutants or different doses of a drug.
 
-In this tutorial, you will compare RNA‑Seq data obtained from different conditions in order to detect genes that are expressed with statistically significant differences. 
+In this tutorial, you will compare RNA‑Seq data in order to detect genes that are expressed with statistically significant differences. 
 
 We will be working in R this time.
 
 ## 🧠 Learning Objectives
 
 By the end of this exercise, you should be able to:
-* Explain how single-copy core genes are identified and used in phylogenomics.
-* Interpret phylogenetic trees in the context of evolutionary relationships.
-* Recognize limitations and sources of bias in genome-based phylogenetic inference.
+* Gain more familiarity with R. 
+* Understand the importance of normalization of data to make samples comparable.
+* Quantify gene expression differences between experimental conditions.
+* Identify significantly differentially expressed genes. 
 
 
 ## 🧪 Step 1: Reading in the data and install initial software
