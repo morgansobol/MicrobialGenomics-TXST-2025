@@ -156,3 +156,28 @@ dim(countTable)        # original
 ```
 
 Ok, stop here and we will continue DGE later in lab. 
+
+## 🧪 Step 3: DGE analysis
+
+We will create a `DGEList` to store our filtered count information and sample/condition info.
+```R
+# make sure names are as intended
+names(countTableFilter)
+
+# create the condition vector derived from the names
+conditions <- sub("_.$", "", names(countTableFilter))
+
+# create the dgelist
+dge <- DGEList(counts = countTableFilter, group = conditions)
+dge
+# Note: norm.factors == 1 indicates not yet normalized
+```
+
+Now we are ready to normalize our data for differential analysis. `edgeR` uses the command `calcNormFactors`. Let's take a look at what our options are for this command using the HELP tab. 
+
+The recommended normalization method in `edgeR` is TMM, or Trimmed Mean of M values. This takes into account sequencing depth, RNA composition, and gene lengths. 
+
+```R
+dge <- calcNormFactors(dge)
+dge
+```
