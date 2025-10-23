@@ -326,7 +326,7 @@ countNormalized <- cpm(dge, normalized.lib.size = TRUE)
 DEGenes <- rownames(resEdgeR[resEdgeR$Expression != "non-DE", ])
 signifGenNorm <- countNormalized[DEGenes, ]
 
-# Z‑score across genes (rows)
+# Z‑score across genes (rows) tell you whether that gene is upregulated or downregulated relative to its own baseline across samples.
 data4heatmap <- t(scale(t(signifGenNorm), center = TRUE, scale = TRUE))
 
 Heatmap(
@@ -336,6 +336,13 @@ Heatmap(
   show_row_names = TRUE
 )
 ```
+
+If you have annotation information for the genes (I don't for these unfortunately), then you can proceed to Gene Set Enrichment analysis (GSEA). 
+
+A tool I recommend:
+ClusterProfiler: https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html
+  
+
 
 
 
