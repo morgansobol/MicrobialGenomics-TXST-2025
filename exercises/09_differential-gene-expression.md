@@ -1,4 +1,4 @@
-# Week 9: Differential Expression Analysis
+## Week 9: Differential Expression Analysis
 
 Studies of **differential expression** generally aim to determine the differences between a **baseline condition** and an **experimental condition**.
 In the simplest case, expression levels are compared between two conditions—for example, **control vs. treatment** or **mutant vs. wild‑type**. 
