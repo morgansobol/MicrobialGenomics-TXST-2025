@@ -175,11 +175,167 @@ dge
 
 Now we are ready to normalize our data for differential analysis. `edgeR` uses the command `calcNormFactors`. Let's take a look at what our options are for this command using the HELP tab. 
 
-The recommended normalization method in `edgeR` is TMM, or Trimmed Mean of M values. This takes into account sequencing depth, RNA composition, and gene lengths. 
+The recommended normalization method in `edgeR` is TMM, or Trimmed Mean of M values. This takes into account sequencing depth and sample count composition. TMM normalization adjusts library sizes based on the assumption that most genes are not differentially expressed. It corrects for library composition bias (not just library size), e.g. if one sample has a few genes with extremely high counts, without correction, many other genes might appear artificially low in that library. The trimming + mean calculation helps mitigate that. And we don't need to account for gene length in this case since we are comparing the same gene across different samples. 
+
+Let's break down what is going on:
+
+1. Pick a reference sample to normalize all samples against.
+For all samples, the 75th quartile is calculated on based on counts per million scaling, which separates the top 25% of genes with the highest counts from the lower 75%. The chosen reference sample is the one whose 75th quartile value is closest to the average 75th quartile of scaled counts across _all_ libraries.
+
+<img width="1154" height="339" alt="image" src="https://github.com/user-attachments/assets/0296394c-cfc7-4186-a98d-167440b4afaa" />
+
+2. Compare genes from each sample to the reference to create a scaling factor.
+The scaling factor in TMM normalization is a number that tells `edgeR` how much to rescale that sample so that the majority of counts for the genes line up with the reference sample. Extreme high or low counts get trimmed. This makes expression values comparable across samples.
+
+4. Apply the scaling factor to adjust library sizes.
+Each sample’s original library size is multiplied by its TMM scaling factor to create an effective library size.
+These effective sizes are then used to compute normalized counts per million (CPM).
+This step corrects for differences in sequencing depth and sample composition, ensuring that any observed differences in gene expression reflect true biological variation, not technical bias.
+
+<img width="1000" height="500" alt="image" src="https://github.com/user-attachments/assets/35d18593-fa2d-4262-9648-14818e989294" />
+
+If this is difficult to digest, I suggest watching this Youtube video: https://www.youtube.com/watch?v=Wdt6jdi-NQo 
+
+Now all of that happens in this one command:
 
 ```R
 dge <- calcNormFactors(dge)
 dge
+
+# Re‑check MDS after normalization to see if samples still cluster by condition
+plotMDS(dge, col = c(2,2,2,3,3,3)) 
 ```
+
+Ok, to test for differential expression, `edgeR` needs to know how much variation is expected for each gene.
+
+```R
+# estimates biological variability for the genes across replicates
+dge <- estimateDisp(dge)
+
+# Here we ask for a single global estimate of variability across all genes ("baseline")
+dge$common.dispersion   
+
+```
+
+Biological Coefficient of Variation (BCV) = √0.0168 ≈ 0.13 (13%)
+
+That means, on average, gene expression levels vary by about 13% between biological replicates after accounting for sequencing depth and normalization.
+
+**Now** we can test the hypothesis, i.e. if genes are expressed differently between conditions. 
+
+The `exactTest()` function asks, for every gene, “Are the counts in Fructose and Glycerol different enough that it’s unlikely to be just random variation?”
+
+It uses:
+* Your normalized counts (after calcNormFactors)
+* The dispersion estimates (from estimateDisp)
+* Your group labels (stored in dge$samples$group)
+
+to test the null hypothesis:
+
+𝐻0: mean expression of a gene is the same in both groups
+
+vs. 
+
+𝐻1: a gene is differentially expressed between groups.
+
+By default, `edgeR` uses the first factor level as the baseline.
+```R
+dge$samples$group
+[1] Fructose Fructose Fructose Glycerol Glycerol Glycerol
+Levels: Fructose Glycerol
+```
+So, we will be asking if genes in Glycerol are different from Fructose treatment.  
+
+Run the exact test:
+```R
+et <- exactTest(dge)
+```
+This give you an output with the following info:
+* logFC
+* logCPM
+* PValue
+* FDR (False Discovery Rate; Benjamini–Hochberg corrected p-value)
+
+Let's summarize the DGEs.
+```R
+ # top 10 by default
+topTags(et)
+ # all genes   
+resEdgeR <- topTags(et, n = Inf)$table
+```
+
+We will select DGEs to analyze based on some thresholds typically used in DGE analysis:
+* FDR ≤ 0.01 = You expect fewer than 1% false positives among DEGs.
+* |logFC| ≥ 1.5 = DEGs should have a fold change greater than +1.5 or lower than -1.5
+
+```R
+genesDE <- decideTests(et, lfc = 1.5, p.value = 0.01)
+summary(genesDE)
+```
+
+We can also just directly filter out table using those thresholds
+```R
+gDE <- resEdgeR[abs(resEdgeR$logFC) >= 1.5 & resEdgeR$FDR <= 0.01, ]
+dim(gDE)
+```
+
+Now let's label those results with meaningful names:
+```R
+resEdgeR[rownames(genesDE), "Expression"] <- data.frame(genesDE[, "Glycerol-Fructose"])
+
+resEdgeR[resEdgeR$Expression ==  1, "Expression"] <- "UpInGlycerol"
+resEdgeR[resEdgeR$Expression == -1, "Expression"] <- "UpInFructose"
+resEdgeR[resEdgeR$Expression ==  0, "Expression"] <- "non-DE"
+```
+
+Now save results:
+```R
+write.table(resEdgeR, "work_dir/All_Results_EdgeR.txt", sep = "	", quote = FALSE)
+write.table(genesDE, "work_dir/Genes_DE_edgeR_calls.txt", sep = "	", quote = FALSE)
+```
+
+## 🧪 Step 4: Plot results
+
+Great, now we can plot our results, starting with the volcano plot. We use −log10 (FDR) in a volcano plot purely for visualization, not for any statistical calculation, because FDR values are very small. 
+
+```R
+resEdgeR$negLogFDR <- -log10(resEdgeR$FDR)
+
+ggplot(resEdgeR, aes(x = logFC, y = negLogFDR, color = Expression)) +
+  geom_point(shape = 1) + theme_bw() +
+  scale_color_manual(breaks = c("UpInGlycerol", "non-DE", "UpInFructose"),
+                     values = c("red", "black", "green")) +
+  geom_vline(xintercept = c(-1.5, 1.5), linetype = "dashed", color = "blue", size = 0.75) +
+  geom_hline(yintercept = -log10(0.01), linetype = "dashed", color = "blue", size = 0.75)
+
+ggsave("work_dir/volcano_plot.pdf")
+```
+
+On the other hand, we can plot a heatmap:
+```R
+# install ComplexHeatmap
+BiocManager::install("ComplexHeatmap")
+
+# load it
+library(ComplexHeatmap)
+
+# Normalized counts
+countNormalized <- cpm(dge, normalized.lib.size = TRUE)
+
+# Select genes classified as DE
+DEGenes <- rownames(resEdgeR[resEdgeR$Expression != "non-DE", ])
+signifGenNorm <- countNormalized[DEGenes, ]
+
+# Z‑score across genes (rows)
+data4heatmap <- t(scale(t(signifGenNorm), center = TRUE, scale = TRUE))
+
+Heatmap(
+  data4heatmap,
+  name = "z-score",
+  col = topo.colors(12),
+  show_row_names = TRUE
+)
+```
+
 
 
