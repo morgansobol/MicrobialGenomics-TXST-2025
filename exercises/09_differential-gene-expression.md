@@ -132,7 +132,7 @@ ggplot(dfMDS, aes(x, y, color = condition)) +
   geom_text(aes(label = sample), vjust = -0.5, size = 3, show.legend = FALSE)
 ```
 
-The last pre-processing step we need to do is remove low-counts and adjust for library size. We filter out genes with very low counts, because those genes:
+The last pre-processing step we need to do is to remove low-counts and adjust for library size. We filter out genes with very low counts, because those genes:
 * are often not truly expressed (just background noise),
 * and they make the statistical model unstable (too many zeros).
 
@@ -181,3 +181,5 @@ The recommended normalization method in `edgeR` is TMM, or Trimmed Mean of M val
 dge <- calcNormFactors(dge)
 dge
 ```
+
+
